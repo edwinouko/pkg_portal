@@ -11,17 +11,6 @@
 <link rel="stylesheet" href="./css/home.css">
 <!-- Charts made with chartjs.org --->
 
-<!--?php
- if (@$_SERVER['SSL_CLIENT_S_DN_CN']) {
-  print 'Welcome, <b>' . $_SERVER['SSL_CLIENT_S_DN_CN'] . '</b>.<br>'
-      . 'A certificate for <b>' . $_SERVER['SSL_CLIENT_S_DN_Email'] . '</b>'
-      . ', issued by the <b>' . $_SERVER['SSL_CLIENT_I_DN_O']
-      . '</b>, is correctly installed on your browser.<br>'
-      . 'Your certificate will expire on ' . $_SERVER['SSL_CLIENT_V_END'] . '.';
-	  
-?--->
-
-
 <body class="w3-light-grey">
 
 <!-- Page Container -->
@@ -289,51 +278,91 @@
 		  <hr>
 		  </div>
 	  </div>
-	  
-	  <div class="w3-container w3-card w3-white" style="margin-top:20px; page-break-before: always;" id="printPageBodyInner4">
-        <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-certificate fa-fw w3-margin-right w3-xxlarge w3-text-teal" style="color:#961500!important;"></i>Post-Program Feedback</h2>
-          <div class="w3-container">
-          <h5 class="w3-opacity"><b>Did your experience contribute to the following?</b></h5>
-		  <div class='chartHolder'>
-			<canvas id="Q1_CompletionChart" width="850" height="550"></canvas>
-          </div>
-		  <hr>
-		  </div>
-	      <div class="w3-container">
-          <h5 class="w3-opacity"><b>Did your experience interest you in learning more about the following?</b></h5>
-		  <div class='chartHolder'>
-			<canvas id="Q2_CompletionChart" width="850" height="550"></canvas>
-          </div>
-          </div>
-		  <hr>
-		  <div class="w3-container" style="page-break-before: always;">
-          <h5 class="w3-opacity"><b>Did your experience better equip you do the following?</b></h5>
-		  <div class='chartHolder'>
-			<canvas id="Q3_CompletionChart" width="850" height="550"></canvas>
-          </div>
-          </div>
-		  <hr>
-		  <div class="w3-container">
-          <h5 class="w3-opacity"><b>Student Ambassador Sign-ups</b></h5>
-		  <div id="pkgAmbDiv" class="textDiv overflowMinimal">
-          </div>
-		  </div>
-		  <hr>
-		  <div class="w3-container">
-          <h5 class="w3-opacity"><b>Program Feedback</b></h5>
-		  <div id="learningFeedDiv" class="textDiv overflowMinimal">
-          </div>
-		  </div>
-		  <hr>
-		  <div class="w3-container">
-          <h5 class="w3-opacity"><b>Optional Feedback</b></h5>
-		  <div id="optionalFeedDiv" class="textDiv overflowMinimal">
-          </div>
-		  </div>
-		  <hr>
-	  </div>
-	  
 
+	  <div class="w3-container w3-card w3-white" style="margin-top:20px; page-break-before: always;" id="printPageBodyInner4">
+	  <!-- <div class="w3-container w3-card w3-white" id="printPageBodyInner2" style="page-break-before: always"> -->
+        <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-certificate fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Post-Program Feedback</h2>
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>I have a better understanding of a social issue(s)/challenge(s) addressed by this program.</b></h5>
+		  <div class='chartHolder'>
+			<canvas id="better_understanding_agree" width="800" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+	      <div class="w3-container">
+          <h5 class="w3-opacity"><b>Please describe the ways in which this program affected your understanding of relevant social issue(s)/challenge(s).</b></h5>
+		  <div class='chartHolder'>
+			<canvas id="effect_understanding_social_issues" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+	  	  <div class="w3-container" style="page-break-before: always">
+          <h5 class="w3-opacity"><b>I have gained skills that will allow me to contribute to social change within a community.</b></h5>
+		  <div class='chartHolder'>
+			<canvas id="gain_skills_social_change_agree" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>I am more confident in my ability to influence social change within a community.</b></h5>
+		  <div class='chartHolder'>
+			<canvas id="confidence_influencing_social_change_agree" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>Please describe the ways in which this program affected your skills and confidence in your ability to influence social change. </b></h5>
+		  <div class='chartHolder'>
+			<canvas id="effect_confidence_influencing_social_change" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>I am inspired to use my knowledge and skills to support social change efforts in my life outside of work and school. </b></h5>
+		  <div class='chartHolder'>
+			<canvas id="inspired_knowledge_forsocial_change_agree" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+		  
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>I am considering how to incorporate social change efforts into my academic interests.</b></h5>
+		  <div class='chartHolder'>
+			<canvas id="incorporate_social_change_effort_academics_agree" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>I am considering how to incorporate social change efforts into my future career.</b></h5>
+		  <div class='chartHolder'>
+			<canvas id="incorporate_social_change_effort_career_agree" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>Please describe the ways in which this program affected your motivations to participate in social change efforts, now at MIT and in the future.</b></h5>
+		  <div class='chartHolder'>
+			<canvas id="effect_motivation_social_change" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>Please check this box if you are okay with us associating your name with any quotes or feedback from this form.</b></h5>
+		  <div class='chartHolder'>
+			<canvas id="associate_name_feedback" width="850" height="550"></canvas>
+          </div>
+		  <hr>
+		  </div>
+
+	  </div>
     <!-- End Right Column -->
     </div>
     
@@ -342,11 +371,6 @@
   
   <!-- End Page Container -->
 </div>
-
-<!---footer class="w3-container w3-teal w3-center w3-margin-top">
-  <!---p>Developed using a w3 schools template.</p>
-</footer --->
-
 <script src="./js/functions.js"></script>
 </body>
 </html>

@@ -145,24 +145,19 @@ function getDataPlots(result, firstRun=TRUE){
 		document.getElementById("URMCounter").style.width = URMPC + "%";
 
 		// Plot Data - Program
-		let programDataArray, programLabelArray;
-		[programDataArray, programLabelArray] = getQuestionArrays('programPlot', result);
+		const [programDataArray, programLabelArray] = getQuestionArrays('programPlot', result);
 		
 		// Plot Data - Degree
-		let degreeDataArray, degreeLabelArray;
-		[degreeDataArray, degreeLabelArray] = getQuestionArrays('degreePlot', result);
-		
+		const [degreeDataArray, degreeLabelArray] = getQuestionArrays('degreePlot', result);
+
 		// Plot Data - Gender
-		let genderDataArray, genderLabelArray;
-		[genderDataArray, genderLabelArray] = getQuestionArrays('genderPlot', result);
+		const [genderDataArray, genderLabelArray] = getQuestionArrays('genderPlot', result);
 		
 		// Plot Data - Race
-		let raceDataArray, raceLabelArray;
-		[raceDataArray, raceLabelArray] = getQuestionArrays('racePlot', result);
+		const [raceDataArray, raceLabelArray] = getQuestionArrays('racePlot', result);
 				
 		// Plot Data - Department
-		let departmentDataArray, departmentLabelArray;
-		[departmentDataArray, departmentLabelArray] = getQuestionArrays('departmentPlot', result);
+		const [departmentDataArray, departmentLabelArray] = getQuestionArrays('departmentPlot', result);
 		
 		// Get Departments Not represented
 		var allDepartments = ['Course 1 - Civil and Environmental Engineering',
@@ -266,19 +261,19 @@ function getDataPlots(result, firstRun=TRUE){
 				}
 				
 				//Program Plot 
-				let programData, chartOptionsProgram = plotData(programDataArray, 'rgba(0, 99, 132, 0.6)', 'rgba(0, 99, 132, 1)');
+				const [programData, chartOptionsProgram] = plotData(programDataArray, 'rgba(0, 99, 132, 0.6)', 'rgba(0, 99, 132, 1)');
 				
 				// Degree Plot 
-				let degreeData, chartOptionsDegree = plotData(degreeDataArray, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				const [degreeData, chartOptionsDegree] = plotData(degreeDataArray, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
 
 				//Gender Plot 
-				let genderData, chartOptionsGender = plotData(genderDataArray, 'rgba(120, 99, 132, 0.6)', 'rgba(120, 99, 132, 1)');
+				const [genderData, chartOptionsGender] = plotData(genderDataArray, 'rgba(120, 99, 132, 0.6)', 'rgba(120, 99, 132, 1)');
 
 				//Race Plot 
-				let raceData, chartOptionsRace = plotData(raceDataArray, 'rgba(240, 99, 132, 0.6)', 'rgba(240, 99, 132, 1)');
+				const [raceData, chartOptionsRace] = plotData(raceDataArray, 'rgba(240, 99, 132, 0.6)', 'rgba(240, 99, 132, 1)');
 				
 				//Department Plot 
-				let departmentData, chartOptionsDepartment = plotData(departmentDataArray, 'rgba(191, 191, 63, 0.8)', 'rgba(191, 191, 63, 0.8)', left_padding=50);
+				const [departmentData, chartOptionsDepartment] = plotData(departmentDataArray, 'rgba(191, 191, 63, 0.8)', 'rgba(191, 191, 63, 0.8)', left_padding=50);
 
 				// Learning Outcomes Bar Plots			
 				var interestData = {
@@ -385,47 +380,37 @@ function getCompletionDataPlots(result, firstRun=TRUE){
 		document.getElementById("studentCompletion").innerHTML = totalStudentsComplete;
 		document.getElementById("studentCompletion").style.width = pcTargetComplete + "%";
 
-		//Exit Survey Questions
-		let better_understanding_agree_array, better_understanding_agree_labels, gain_skills_social_change_agree_array,
-		 gain_skills_social_change_agree_labels, confidence_influencing_social_change_agree_array, 
-		 confidence_influencing_social_change_agree_labels, inspired_knowledge_forsocial_change_agree_array,
-		  inspired_knowledge_forsocial_change_agree_labels, incorporate_social_change_effort_academics_agree_array,
-		   incorporate_social_change_effort_academics_agree_labels,
-		   incorporate_social_change_effort_career_agree_array, incorporate_social_change_effort_career_agree_labels;  
+		const [better_understanding_agree_array, better_understanding_agree_labels] = getQuestionArrays('better_understanding_agree', result);
+		const [gain_skills_social_change_agree_array, gain_skills_social_change_agree_labels] = getQuestionArrays('gain_skills_social_change_agree', result);
+		const [confidence_influencing_social_change_agree_array, confidence_influencing_social_change_agree_labels] = getQuestionArrays('confidence_influencing_social_change_agree', result);
+		const [inspired_knowledge_forsocial_change_agree_array, inspired_knowledge_forsocial_change_agree_labels] = getQuestionArrays('inspired_knowledge_forsocial_change_agree', result);
+		const [incorporate_social_change_effort_academics_agree_array, incorporate_social_change_effort_academics_agree_labels] = getQuestionArrays('incorporate_social_change_effort_academics_agree', result);
+		const [incorporate_social_change_effort_career_agree_array, incorporate_social_change_effort_career_agree_labels] = getQuestionArrays('incorporate_social_change_effort_career_agree', result);
 
-		better_understanding_agree_array, better_understanding_agree_labels = getQuestionArrays('better_understanding_agree', result);
-		gain_skills_social_change_agree_array, gain_skills_social_change_agree_labels = getQuestionArrays('gain_skills_social_change_agree', result);
-		confidence_influencing_social_change_agree_array, confidence_influencing_social_change_agree_labels = getQuestionArrays('confidence_influencing_social_change_agree', result);
-		inspired_knowledge_forsocial_change_agree_array, inspired_knowledge_forsocial_change_agree_labels = getQuestionArrays('inspired_knowledge_forsocial_change_agree', result);
-		incorporate_social_change_effort_academics_agree_array, incorporate_social_change_effort_academics_agree_labels = getQuestionArrays('incorporate_social_change_effort_academics_agree', result);
-		incorporate_social_change_effort_career_agree_array, incorporate_social_change_effort_career_agree_labels = getQuestionArrays('incorporate_social_change_effort_career_agree', result);
-
-		function detailedResponse(result, idName, jsonName){
-			var currentData = JSON.parse(result[jsonName]);
-			var optionalInnerHTML;
+		function detailedResponse(result, jsonName){
+			let currentData = JSON.parse(result[jsonName]);
+			let resp;
 			for (i = 0; i < currentData.length; i++) {
-				tempData = String(currentData[i]);
 				if(i==0){
-					optionalInnerHTML = '' + tempData;
+					resp = '' + String(currentData[i]);
 				} else {
-					optionalInnerHTML = optionalInnerHTML + '<br><br>' + tempData;
+					resp = resp + '<br><br>' + String(currentData[i]);
 				}
 			}
-			let thisDiv = document.getElementById(idName);
-			thisDiv.innerHTML = optionalInnerHTML;
+			return resp;
 		}
 		//Effect on understanding of Social issues
-		detailedResponse(result, "effect_understanding_social_issues", "effect_understanding_social_issues");
-		//Effect on Confodence to Influence Social Change
-		detailedResponse(result, "effect_confidence_influencing_social_change", "effect_confidence_influencing_social_change");
+		document.getElementById("effect_understanding_social_issues").innerHTML = detailedResponse(result, "effect_understanding_social_issues");
+		//Effect on Confidence to Influence Social Change
+		document.getElementById("effect_confidence_influencing_social_change").innerHTML = detailedResponse(result, "effect_confidence_influencing_social_change");
 		//Motivation to Influence Social Change
-		detailedResponse(result, "effect_motivation_social_change", "effect_motivation_social_change");
+		document.getElementById("effect_motivation_social_change").innerHTML = detailedResponse(result, "effect_motivation_social_change");
 		//Associate name with feedback
-		detailedResponse(result, "associate_name_feedback", "associate_name_feedback");
+		document.getElementById("associate_name_feedback").innerHTML = detailedResponse(result, "associate_name_feedback");
 		// Learning Feedback
-		detailedResponse(result, 'learningFeedDiv', 'learningFeed');
+		document.getElementById("learningFeedDiv").innerHTML = detailedResponse(result, "learningFeed");
 		// Optional Feedback
-		detailedResponse(result, 'optionalFeedDiv', 'optionalFeed');
+		document.getElementById("optionalFeedDiv").innerHTML = detailedResponse(result, "optionalFeed");
 		
 		// PKG Ambassador Feedback
 		var ambDataFN = JSON.parse(result.pkgAmbFN);
@@ -453,17 +438,17 @@ function getCompletionDataPlots(result, firstRun=TRUE){
 		// Plot Data
 				//Structure PlotData
 				//Program Plot 
-				let better_understanding_agree_data, better_understanding_agree_chart_option;
-				let inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_chart_option;
-				let gain_skills_agree_social_change_data, gain_skills_agree_social_change_chart_option;
-				let confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_chart_option;
-				let incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_chart_option;
-				[better_understanding_agree_data, better_understanding_agree_chart_option] = plotData(better_understanding_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
-				[inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_chart_option] = plotData(inspired_knowledge_forsocial_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
-				[gain_skills_agree_social_change_data, gain_skills_agree_social_change_chart_option] = plotData(gain_skills_social_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
-				[confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_chart_option] = plotData(confidence_influencing_social_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
-				[incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_chart_option] = plotData(incorporate_social_change_effort_academics_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
-				
+				// let better_understanding_agree_data, better_understanding_agree_chart_option;
+				// let inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_chart_option;
+				// let gain_skills_agree_social_change_data, gain_skills_agree_social_change_chart_option;
+				// let confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_chart_option;
+				// let incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_chart_option;
+				const [better_understanding_agree_data, better_understanding_agree_chart_option] = plotData(better_understanding_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				const [inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_chart_option] = plotData(inspired_knowledge_forsocial_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				const [gain_skills_social_change_agree_data, gain_skills_social_change_agree_chart_option] = plotData(gain_skills_social_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				const [confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_chart_option] = plotData(confidence_influencing_social_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				const [incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_chart_option] = plotData(incorporate_social_change_effort_academics_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				const [incorporate_social_change_effort_career_agree_data, incorporate_social_change_effort_career_agree_chart_option] = plotData(incorporate_social_change_effort_career_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
 				if(!firstRun){
 					// Destroy Chart variables before recreating
 					better_understanding_agree.destroy();
@@ -475,7 +460,7 @@ function getCompletionDataPlots(result, firstRun=TRUE){
 				}
 				// Create the Chart Variables (that will be updated via AJAX)
 				better_understanding_agree = getChart("better_understanding_agree", better_understanding_agree_data, better_understanding_agree_labels, better_understanding_agree_chart_option);
-				gain_skills_social_change_agree = getChart("gain_skills_social_change_agree", gain_skills_social_change_agree_data, gain_skills_social_change_agree_labels, gain_skills_agree_social_change_chart_option);
+				gain_skills_social_change_agree = getChart("gain_skills_social_change_agree", gain_skills_social_change_agree_data, gain_skills_social_change_agree_labels, gain_skills_social_change_agree_chart_option);
 				confidence_influencing_social_change_agree = getChart("confidence_influencing_social_change_agree", confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_labels, confidence_influencing_social_change_agree_chart_option);
 				inspired_knowledge_forsocial_change_agree = getChart("inspired_knowledge_forsocial_change_agree", inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_labels, inspired_knowledge_forsocial_change_agree_chart_option);
 				incorporate_social_change_effort_academics_agree = getChart("incorporate_social_change_effort_academics_agree", incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_labels, incorporate_social_change_effort_academics_agree_chart_option);

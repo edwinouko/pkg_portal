@@ -362,6 +362,16 @@
 		  <hr>
 		  </div>
 
+		  <div class="w3-container">
+			<h5 class="w3-opacity"><b>Program Feedback</b></h5>
+			<div id="learningFeedDiv" class="textDiv overflowMinimal"></div>
+		  </div>
+		  <hr>
+		  <div class="w3-container">
+			<h5 class="w3-opacity"><b>Optional Feedback</b></h5>
+			<div id="optionalFeedDiv" class="textDiv overflowMinimal">
+			</div>
+		  </div>
 	  </div>
     <!-- End Right Column -->
     </div>

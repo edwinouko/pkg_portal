@@ -7,9 +7,7 @@ error_reporting(E_ALL);
 function queryDB($connection,$queryName) {
 	$stmt = $connection->prepare($queryName);
 	$stmt->execute();
-	//grab a result set
 	$resultSet = $stmt->get_result();
-	//pull all results as an associative array
 	return(json_encode($resultSet->fetch_all()));
 }
 					
@@ -361,37 +359,37 @@ if ($reqType=="allData"){
 		$query ="SELECT DISTINCT Race FROM Registration ORDER BY Race ASC";
 		$raceList = queryDB($con, $query);
 		
-		$query ="SELECT DISTINCT Race FROM ExitSurvey ORDER BY Race ASC";
+		$query ="SELECT DISTINCT Race FROM CompletionData ORDER BY Race ASC";
 		$raceList2 = queryDB($con, $query);
 		
 		$query ="SELECT DISTINCT Gender FROM Registration ORDER BY Gender ASC";
 		$genderList = queryDB($con, $query);
 		
-		$query ="SELECT DISTINCT Gender FROM ExitSurvey ORDER BY Gender ASC";
+		$query ="SELECT DISTINCT Gender FROM CompletionData ORDER BY Gender ASC";
 		$genderList2 = queryDB($con, $query);
 		
 		$query ="SELECT DISTINCT StudentType FROM Registration ORDER BY StudentType ASC";
 		$degList = queryDB($con, $query);
 		
-		$query ="SELECT DISTINCT StudentType FROM ExitSurvey ORDER BY StudentType ASC";
+		$query ="SELECT DISTINCT StudentType FROM CompletionData ORDER BY StudentType ASC";
 		$degList2 = queryDB($con, $query);
 		
 		$query ="SELECT DISTINCT Department FROM Registration ORDER BY Department ASC";
 		$depList = queryDB($con, $query);
 		
-		$query ="SELECT DISTINCT Department FROM ExitSurvey ORDER BY Department ASC";
+		$query ="SELECT DISTINCT Department FROM CompletionData ORDER BY Department ASC";
 		$depList2 = queryDB($con, $query);
 		
 		$query ="SELECT DISTINCT ProgramYear FROM Registration ORDER BY ProgramYear ASC";
 		$ayList = queryDB($con, $query);
 		
-		$query ="SELECT DISTINCT ProgramYear FROM ExitSurvey ORDER BY ProgramYear ASC";
+		$query ="SELECT DISTINCT ProgramYear FROM CompletionData ORDER BY ProgramYear ASC";
 		$ayList2 = queryDB($con, $query);
 		
 		$query ="SELECT DISTINCT PKGProgram FROM Registration ORDER BY PKGProgram ASC";
 		$pkgProgramList = queryDB($con, $query);
 		
-		$query ="SELECT DISTINCT PKGProgram FROM ExitSurvey ORDER BY PKGProgram ASC";
+		$query ="SELECT DISTINCT PKGProgram FROM CompletionData ORDER BY PKGProgram ASC";
 		$pkgProgramList2 = queryDB($con, $query);
 		
 		echo json_encode(array(
@@ -422,70 +420,59 @@ if ($reqType=="allData"){
 				$allExpStudents = queryDB($con, $query);
 			
 				// Get Default Post-Program Data
-				$query = "SELECT COUNT(DISTINCT TimeStamp) FROM ExitSurvey";
+				$query = "SELECT COUNT(DISTINCT TimeStamp) FROM CompletionData";
 				$allStudents = queryDB($con, $query);
 				
 				// Get Learning Feedback
-				$query = "SELECT LearningFeedback FROM ExitSurvey WHERE LearningFeedback!=''";
+				$query = "SELECT LearningFeedback FROM CompletionData WHERE LearningFeedback!=''";
 				$learningFeed= queryDB($con, $query);
 				
 				// Get PKG Ambassador 
-				$query = "SELECT FirstName FROM ExitSurvey WHERE PKG_Ambassador='Yes'";
+				$query = "SELECT FirstName FROM CompletionData WHERE PKG_Ambassador='Yes'";
 				$pkgAmbFN= queryDB($con, $query);
 
-				$query = "SELECT LastName FROM ExitSurvey WHERE PKG_Ambassador='Yes'";
+				$query = "SELECT LastName FROM CompletionData WHERE PKG_Ambassador='Yes'";
 				$pkgAmbLN= queryDB($con, $query);
 
-				$query = "SELECT Email FROM ExitSurvey WHERE PKG_Ambassador='Yes'";
+				$query = "SELECT Email FROM CompletionData WHERE PKG_Ambassador='Yes'";
 				$pkgAmbEmail= queryDB($con, $query);
 
 				// Get Optional Feedback
-				$query = "SELECT OptionalFeedback FROM ExitSurvey WHERE OptionalFeedback!=''";
+				$query = "SELECT OptionalFeedback FROM CompletionData WHERE OptionalFeedback!=''";
 				$optionalFeed= queryDB($con, $query);
 							
 				// Get Survey Results
 				
-				// Contribute
-				$query = "SELECT Q1Contribute_SI FROM ExitSurvey";
-				$Q1_SI= queryDB($con, $query);
+				$query = "SELECT better_understanding_agree FROM CompletionData";
+				$better_understanding_agree = queryDB($con, $query);
 
-				$query = "SELECT Q1Contribute_USC FROM ExitSurvey";
-				$Q1_USC= queryDB($con, $query);
+				$query = "SELECT effect_understanding_social_issues FROM CompletionData";
+				$effect_understanding_social_issues= queryDB($con, $query);
 							
-				$query = "SELECT Q1Contribute_Skill FROM ExitSurvey";
-				$Q1_Skill= queryDB($con, $query);
+				$query = "SELECT gain_skills_social_change_agree FROM CompletionData";
+				$gain_skills_social_change_agree= queryDB($con, $query);
 
-				$query = "SELECT Q1Contribute_Network FROM ExitSurvey";
-				$Q1_Network= queryDB($con, $query);
+				$query = "SELECT confidence_influencing_social_change_agree FROM CompletionData";
+				$confidence_influencing_social_change_agree= queryDB($con, $query);
 
-				$query = "SELECT Q1Contribute_Res FROM ExitSurvey";
-				$Q1_Res= queryDB($con, $query);
+				$query = "SELECT effect_confidence_influencing_social_change FROM CompletionData";
+				$effect_confidence_influencing_social_change = queryDB($con, $query);
 		
-				// Interest
-				$query = "SELECT Q2Interest_Context FROM ExitSurvey";
-				$Q2_Context= queryDB($con, $query);
+				$query = "SELECT inspired_knowledge_forsocial_change_agree FROM CompletionData";
+				$inspired_knowledge_forsocial_change_agree = queryDB($con, $query);
 				
-				$query = "SELECT Q2Interest_USC FROM ExitSurvey";
-				$Q2_USC= queryDB($con, $query);
+				$query = "SELECT incorporate_social_change_effort_academics_agree FROM CompletionData";
+				$incorporate_social_change_effort_academics_agree= queryDB($con, $query);
 
-				$query = "SELECT Q2Interest_Skill FROM ExitSurvey";
-				$Q2_Skill= queryDB($con, $query);
+				$query = "SELECT incorporate_social_change_effort_career_agree FROM CompletionData";
+				$incorporate_social_change_effort_career_agree = queryDB($con, $query);
 
-				$query = "SELECT Q2Interest_Res FROM ExitSurvey";
-				$Q2_Res= queryDB($con, $query);
+				$query = "SELECT effect_motivation_social_change FROM CompletionData";
+				$effect_motivation_social_change = queryDB($con, $query);
 
-				$query = "SELECT Q2Interest_Network FROM ExitSurvey";
-				$Q2_Network= queryDB($con, $query);
+				$query = "SELECT associate_name_feedback FROM CompletionData";
+				$associate_name_feedback = queryDB($con, $query);
 		
-				// Equip 
-				$query = "SELECT Q3Equip_Vol FROM ExitSurvey";
-				$Q3_Vol= queryDB($con, $query);
-		
-				$query = "SELECT Q3Equip_Community FROM ExitSurvey";
-				$Q3_Com= queryDB($con, $query);
-
-				$query = "SELECT Q3Equip_Career FROM ExitSurvey";
-				$Q3_Career= queryDB($con, $query);
 
 				echo json_encode(array( 
 				"reqType"=> $reqType,
@@ -494,22 +481,18 @@ if ($reqType=="allData"){
 				"pkgAmbFN"=> $pkgAmbFN,
 				"pkgAmbLN"=> $pkgAmbLN,
 				"pkgAmbEmail"=> $pkgAmbEmail,
-				"Q1_SI" => $Q1_SI,
-				"Q1_USC" => $Q1_USC,
-				"Q1_Skill" => $Q1_Skill,
-				"Q1_Network" => $Q1_Network,
-				"Q1_Res" => $Q1_Res,
-				"Q2_Context" => $Q2_Context,
-				"Q2_USC" => $Q2_USC,
-				"Q2_Skill" => $Q2_Skill,					
-				"Q2_Res" => $Q2_Res,
-				"Q2_Network" => $Q2_Network,
-				"Q3_Vol" => $Q3_Vol,
-				"Q3_Com" => $Q3_Com,
-				"Q3_Career" => $Q3_Career,
+				"better_understanding_agree" => $better_understanding_agree,
+				"effect_understanding_social_issues" => $effect_understanding_social_issues,
+				"gain_skills_social_change_agree" => $gain_skills_social_change_agree,
+				"confidence_influencing_social_change_agree" => $confidence_influencing_social_change_agree,
+				"effect_confidence_influencing_social_change" => $effect_confidence_influencing_social_change,
+				"inspired_knowledge_forsocial_change_agree" => $inspired_knowledge_forsocial_change_agree,
+				"incorporate_social_change_effort_academics_agree" => $incorporate_social_change_effort_academics_agree,
+				"incorporate_social_change_effort_career_agree" => $incorporate_social_change_effort_career_agree,					
+				"effect_motivation_social_change" => $effect_motivation_social_change,
+				"associate_name_feedback" => $associate_name_feedback,
 				"allStudents" => $allStudents,
 				"allExpStudents" => $allExpStudents));
-				
 			}
 			
 			mysqli_close($con);
@@ -541,87 +524,87 @@ if ($reqType=="allData"){
 				$allExpStudents = queryDB($con, $query);
 							
 				// Get Filtered Data
-				$queryStart = "SELECT COUNT(DISTINCT TimeStamp) FROM ExitSurvey ";
+				$queryStart = "SELECT COUNT(DISTINCT TimeStamp) FROM CompletionData ";
 				$queryEnd = "";
 				$allStudents= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 				
 				// Get Learning Feedback
-				$queryStart = "SELECT LearningFeedback FROM ExitSurvey ";
+				$queryStart = "SELECT LearningFeedback FROM CompletionData ";
 				$queryEnd = "AND LearningFeedback!=''";
 				$learningFeed= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 				
 				// Get PKG Ambassador 
-				$queryStart = "SELECT FirstName FROM ExitSurvey ";
+				$queryStart = "SELECT FirstName FROM CompletionData ";
 				$queryEnd = "AND PKG_Ambassador='Yes'";
 				$pkgAmbFN= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 						
-				$queryStart = "SELECT LastName FROM ExitSurvey ";
+				$queryStart = "SELECT LastName FROM CompletionData ";
 				$queryEnd = "AND PKG_Ambassador='Yes'";
 				$pkgAmbLN= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 					
-				$queryStart = "SELECT Email FROM ExitSurvey ";
+				$queryStart = "SELECT Email FROM CompletionData ";
 				$queryEnd = "AND PKG_Ambassador='Yes'";
 				$pkgAmbEmail= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 					
 				// Get Optional Feedback
-				$queryStart = "SELECT OptionalFeedback FROM ExitSurvey ";
+				$queryStart = "SELECT OptionalFeedback FROM CompletionData ";
 				$queryEnd = "AND OptionalFeedback!=''";
 				$optionalFeed= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 													
 				// Get Survey Results
 				
 				// Contribute
-				$queryStart = "SELECT Q1Contribute_SI FROM ExitSurvey ";
+				$queryStart = "SELECT Q1Contribute_SI FROM CompletionData ";
 				$queryEnd = "";
 				$Q1_SI = queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 								
-				$queryStart = "SELECT Q1Contribute_USC FROM ExitSurvey ";
+				$queryStart = "SELECT Q1Contribute_USC FROM CompletionData ";
 				$queryEnd = "";
 				$Q1_USC = queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 		
-				$queryStart = "SELECT Q1Contribute_Skill FROM ExitSurvey ";
+				$queryStart = "SELECT Q1Contribute_Skill FROM CompletionData ";
 				$queryEnd = "";
 				$Q1_Skill = queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 			
-				$queryStart = "SELECT Q1Contribute_Network FROM ExitSurvey ";
+				$queryStart = "SELECT Q1Contribute_Network FROM CompletionData ";
 				$queryEnd = "";
 				$Q1_Network= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 			
-				$queryStart = "SELECT Q1Contribute_Res FROM ExitSurvey ";
+				$queryStart = "SELECT Q1Contribute_Res FROM CompletionData ";
 				$queryEnd = "";
 				$Q1_Res= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 									
 				// Interest
-				$queryStart = "SELECT Q2Interest_Context FROM ExitSurvey ";
+				$queryStart = "SELECT Q2Interest_Context FROM CompletionData ";
 				$queryEnd = "";
 				$Q2_Context= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 									
-				$queryStart = "SELECT Q2Interest_USC FROM ExitSurvey ";
+				$queryStart = "SELECT Q2Interest_USC FROM CompletionData ";
 				$queryEnd = "";
 				$Q2_USC= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 			
-				$queryStart = "SELECT Q2Interest_Skill FROM ExitSurvey ";
+				$queryStart = "SELECT Q2Interest_Skill FROM CompletionData ";
 				$queryEnd = "";
 				$Q2_Skill= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 			
-				$queryStart = "SELECT Q2Interest_Res FROM ExitSurvey ";
+				$queryStart = "SELECT Q2Interest_Res FROM CompletionData ";
 				$queryEnd = "";
 				$Q2_Res= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 				
-				$queryStart = "SELECT Q2Interest_Network FROM ExitSurvey ";
+				$queryStart = "SELECT Q2Interest_Network FROM CompletionData ";
 				$queryEnd = "";
 				$Q2_Network= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 									
 				// Equip 
-				$queryStart = "SELECT Q3Equip_Vol FROM ExitSurvey ";
+				$queryStart = "SELECT Q3Equip_Vol FROM CompletionData ";
 				$queryEnd = "";
 				$Q3_Vol= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 							
-				$queryStart = "SELECT Q3Equip_Community FROM ExitSurvey ";
+				$queryStart = "SELECT Q3Equip_Community FROM CompletionData ";
 				$queryEnd = "";
 				$Q3_Com= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 
-				$queryStart = "SELECT Q3Equip_Career FROM ExitSurvey ";
+				$queryStart = "SELECT Q3Equip_Career FROM CompletionData ";
 				$queryEnd = "";
 				$Q3_Career= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);		
 
@@ -646,16 +629,13 @@ if ($reqType=="allData"){
 				"Q3_Com" => $Q3_Com,
 				"Q3_Career" => $Q3_Career,
 				"allStudents" => $allStudents,
-				"allExpStudents" => $allExpStudents));
-				
+				"allExpStudents" => $allExpStudents));	
 			}
 			
 			mysqli_close($con);
 	
 } else if ($reqType=="downloadData"){
-			
-			$passwd = $_POST['passwd'];
-			
+			$passwd = $_POST['passwd'];	
 			if($passwd=="timthebeaver"){
 				$prog = $_POST['prog'];
 				$gender = $_POST['gender'];
@@ -683,7 +663,7 @@ if ($reqType=="allData"){
 					$regTableNames= queryDB($con, $query);
 					
 					// Get Completion Column Names
-					$query = "DESCRIBE ExitSurvey";
+					$query = "DESCRIBE CompletionData";
 					$completionTableNames= queryDB($con, $query);
 					
 					// Get All Registration Data
@@ -692,7 +672,7 @@ if ($reqType=="allData"){
 					$registrationData= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 					
 					// Get All Completion Data
-					$queryStart = "SELECT * FROM ExitSurvey ";
+					$queryStart = "SELECT * FROM CompletionData ";
 					$queryEnd = "";
 					$completionData= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 					
@@ -712,11 +692,8 @@ if ($reqType=="allData"){
 				echo json_encode(array( 
 					"reqType"=> $reqType,
 					"auth"=> $auth));
-			}
-			
+			}			
 }
-					
-
 ?> 
 
 

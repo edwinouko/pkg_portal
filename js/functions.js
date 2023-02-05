@@ -1,55 +1,108 @@
-	// https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
-	function exportToCsv(filename, rows, header) {
-		var processRow = function (row) {
-			var finalVal = '';
-			for (var j = 0; j < row.length; j++) {
-				var innerValue = row[j] === null ? '' : row[j].toString();
-				if (row[j] instanceof Date) {
-					innerValue = row[j].toLocaleString();
-				};
-				var result = innerValue.replace(/"/g, '""');
-				if (result.search(/("|,|\n)/g) >= 0)
-					result = '"' + result + '"';
-				if (j > 0)
-					finalVal += ',';
-				finalVal += result;
-			}
-			return finalVal + '\n';
-		};
-
-		var csvFile = header.join(",")+ '\n';
-		for (var i = 0; i < rows.length; i++) {
-			csvFile += processRow(rows[i]);
+// https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+function exportToCsv(filename, rows, header) {
+	var processRow = function (row) {
+		var finalVal = '';
+		for (var j = 0; j < row.length; j++) {
+			var innerValue = row[j] === null ? '' : row[j].toString();
+			if (row[j] instanceof Date) {
+				innerValue = row[j].toLocaleString();
+			};
+			var result = innerValue.replace(/"/g, '""');
+			if (result.search(/("|,|\n)/g) >= 0)
+				result = '"' + result + '"';
+			if (j > 0)
+				finalVal += ',';
+			finalVal += result;
 		}
+		return finalVal + '\n';
+	};
 
-		var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
-		if (navigator.msSaveBlob) { // IE 10+
-			navigator.msSaveBlob(blob, filename);
-		} else {
-			var link = document.createElement("a");
-			if (link.download !== undefined) { // feature detection
-				// Browsers that support HTML5 download attribute
-				var url = URL.createObjectURL(blob);
-				link.setAttribute("href", url);
-				link.setAttribute("download", filename);
-				link.style.visibility = 'hidden';
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-			}
-		}
+	var csvFile = header.join(",")+ '\n';
+	for (var i = 0; i < rows.length; i++) {
+		csvFile += processRow(rows[i]);
 	}
 
+	var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
+	if (navigator.msSaveBlob) { // IE 10+
+		navigator.msSaveBlob(blob, filename);
+	} else {
+		var link = document.createElement("a");
+		if (link.download !== undefined) { // feature detection
+			// Browsers that support HTML5 download attribute
+			var url = URL.createObjectURL(blob);
+			link.setAttribute("href", url);
+			link.setAttribute("download", filename);
+			link.style.visibility = 'hidden';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}
+	}
+}
 
+function getQuestionArrays(element_name, result){
+	const element = JSON.parse(result[element_name]);
+	let element_array =  [];
+	let element_labels = [];
+	for (i = 0; i < element.length; i++) {
+		element_array.push(parseInt(element[i][1]));
+		element_labels.push(String(element[i][0]));
+	}
+	return [element_array, element_labels];
+}
 
+// Create the Chart Variables (that will be updated via AJAX)
+function getChart(id_name, data, labels, thisChartOption){
+	elementCanvas = document.getElementById(id_name).getContext("2d");
+	return new Chart(elementCanvas, {
+		type: 'horizontalBar',
+		data: {
+		  labels: labels,
+		  datasets: [data],
+		},
+		options: thisChartOption
+	  });
+}
+
+//Structure PlotData
+function plotData(someData, bColor, borColor, left_padding=0){
+	var returnData = {
+		label: 'Number of Students',
+		data: someData,
+		backgroundColor:bColor,
+		borderColor: borColor,
+		borderWidth: 2,
+		hoverBorderWidth: 0
+	  };
+
+	  var currentChartOptions = {
+		legend: {
+			 display: false
+		 },
+	   scales: {
+				 xAxes: [{
+					 ticks: {
+					 beginAtZero: true
+				 }
+		 }]	
+	   },
+		 layout: {
+			 padding: {
+			   left: left_padding
+			 }
+		 },
+	   elements: {
+		 rectangle: {
+		   borderSkipped: 'left',
+		 }
+	   }
+	 };
+	return [returnData, currentChartOptions];	  
+}
 
 function getDataPlots(result, firstRun=TRUE){
-		
 
-		//////////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////// Update Data
-		//////////////////////////////////////////////////////////////////////////////////////////		
-			
+		//Update data			
 		if (firstRun==true){
 			var updateTime = JSON.parse(result.updateTime);
 			document.getElementById("lastUpdatedTag").innerHTML = '<b>Last Updated : </b>' + updateTime;
@@ -57,7 +110,6 @@ function getDataPlots(result, firstRun=TRUE){
 		
 		var totalStudentsSQL = JSON.parse(result.allStudents);
 		totalStudentsSQL = parseInt(totalStudentsSQL[0]);
-		//console.log(totalStudentsSQL);
 		var expAnnualStudents = JSON.parse(result.allExpStudents);
 		var pcTarget = parseInt((totalStudentsSQL/expAnnualStudents) * 100);
 		if(pcTarget>100){
@@ -68,7 +120,6 @@ function getDataPlots(result, firstRun=TRUE){
 			
 		var departmentNumSQL = JSON.parse(result.departmentNum);
 		departmentNumSQL = parseInt(departmentNumSQL[0]);
-		//console.log(departmentNumSQL);
 		var depTarget = parseInt(departmentNumSQL/40 * 100);
 		document.getElementById("departmentCounter").innerHTML = departmentNumSQL;
 		document.getElementById("departmentCounter").style.width = depTarget + "%";
@@ -79,7 +130,6 @@ function getDataPlots(result, firstRun=TRUE){
 		var genderStudentsSQL = JSON.parse(result.genderStudents);
 		genderStudentsSQL = parseInt(genderStudentsSQL[0]);
 		
-		//console.log(femaleStudentsSQL);
 		var femalePC = parseInt(femaleStudentsSQL/genderStudentsSQL * 100);
 		document.getElementById("femaleCounter").innerHTML = femalePC + "%";
 		document.getElementById("femaleCounter").style.width = femalePC + "%";
@@ -90,58 +140,29 @@ function getDataPlots(result, firstRun=TRUE){
 		var raceStudentsSQL = JSON.parse(result.raceStudents);
 		raceStudentsSQL = parseInt(raceStudentsSQL[0]);
 		
-		//console.log(URMStudentsSQL);
 		var URMPC = parseInt(URMStudentsSQL/raceStudentsSQL * 100);
 		document.getElementById("URMCounter").innerHTML = URMPC + "%";
 		document.getElementById("URMCounter").style.width = URMPC + "%";
 
-
-
 		// Plot Data - Program
-		var programPlotData = JSON.parse(result.programPlot);
-		var programDataArray =  []; //[40, 70, 100, 120,20];
-		var programLabelArray = []; //["Fellowships","Summer Immersion","IDEAS","Social Impact Employment","ACE"];
-		var i;
-		for (i = 0; i < programPlotData.length; i++) {
-		  programDataArray.push(parseInt(programPlotData[i][1]));
-		  programLabelArray.push(String(programPlotData[i][0]));
-		}
+		let programDataArray, programLabelArray;
+		[programDataArray, programLabelArray] = getQuestionArrays('programPlot', result);
 		
 		// Plot Data - Degree
-		var degreePlotData = JSON.parse(result.degreePlot);
-		var degreeDataArray =  [];
-		var degreeLabelArray = [];
-		for (i = 0; i < degreePlotData.length; i++) {
-		  degreeDataArray.push(parseInt(degreePlotData[i][1]));
-		  degreeLabelArray.push(String(degreePlotData[i][0]));
-		}
+		let degreeDataArray, degreeLabelArray;
+		[degreeDataArray, degreeLabelArray] = getQuestionArrays('degreePlot', result);
 		
 		// Plot Data - Gender
-		var genderPlotData = JSON.parse(result.genderPlot);
-		var genderDataArray =  [];
-		var genderLabelArray = [];
-		for (i = 0; i < genderPlotData.length; i++) {
-		  genderDataArray.push(parseInt(genderPlotData[i][1]));
-		  genderLabelArray.push(String(genderPlotData[i][0]));
-		}
+		let genderDataArray, genderLabelArray;
+		[genderDataArray, genderLabelArray] = getQuestionArrays('genderPlot', result);
 		
 		// Plot Data - Race
-		var racePlotData = JSON.parse(result.racePlot);
-		var raceDataArray =  [];
-		var raceLabelArray = [];
-		for (i = 0; i < racePlotData.length; i++) {
-		  raceDataArray.push(parseInt(racePlotData[i][1]));
-		  raceLabelArray.push(String(racePlotData[i][0]));
-		}
+		let raceDataArray, raceLabelArray;
+		[raceDataArray, raceLabelArray] = getQuestionArrays('racePlot', result);
 				
 		// Plot Data - Department
-		var departmentPlotData = JSON.parse(result.departmentPlot);
-		var departmentDataArray =  [];
-		var departmentLabelArray = [];
-		for (i = 0; i < departmentPlotData.length; i++) {
-		  departmentDataArray.push(parseInt(departmentPlotData[i][1]));
-		  departmentLabelArray.push(String(departmentPlotData[i][0]));
-		}
+		let departmentDataArray, departmentLabelArray;
+		[departmentDataArray, departmentLabelArray] = getQuestionArrays('departmentPlot', result);
 		
 		// Get Departments Not represented
 		var allDepartments = ['Course 1 - Civil and Environmental Engineering',
@@ -181,7 +202,6 @@ function getDataPlots(result, firstRun=TRUE){
 			}else{
 				pipelineOther = pipelineOther + String(pipelinePlotData[i][0]) + ' : ' + parseInt(pipelinePlotData[i][1]) + '<br>';
 			}
-
 		}
 		
 		if(pipelinePlotData.length > 10){
@@ -203,9 +223,8 @@ function getDataPlots(result, firstRun=TRUE){
 		
 		var commentsDiv = document.getElementById('commentsDiv')
 		commentsDiv.innerHTML = commentsInnerHTML;
-		
-		/// Questions
-		
+
+		///Questions
 		var Q1_LearnSI = parseFloat(JSON.parse(result.Q1_LearnSI));
 		var Q1_LearnVS = parseFloat(JSON.parse(result.Q1_LearnVS));
 		var Q1_LearnSocPol = parseFloat(JSON.parse(result.Q1_LearnSocPol));
@@ -231,12 +250,8 @@ function getDataPlots(result, firstRun=TRUE){
 		
 		var Q3_DataLabels = ["Make a difference in your community", "Volunteer towards a cause", "Pursue a career in social impact"];
 		var Q3_DataArray =[Q3_EquipCom,Q3_EquipVol,Q3_EquipCareer];
-		
-		
-		//////////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////// Plot Data
-		//////////////////////////////////////////////////////////////////////////////////////////
-		
+
+		//Plot data
 				if(!firstRun){
 					// Destroy Chart variables before recreating
 					programChart.destroy();
@@ -250,195 +265,22 @@ function getDataPlots(result, firstRun=TRUE){
 					supportChart.destroy();
 				}
 				
+				//Program Plot 
+				let programData, chartOptionsProgram = plotData(programDataArray, 'rgba(0, 99, 132, 0.6)', 'rgba(0, 99, 132, 1)');
 				
-				///// Structure PlotData
+				// Degree Plot 
+				let degreeData, chartOptionsDegree = plotData(degreeDataArray, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
 
+				//Gender Plot 
+				let genderData, chartOptionsGender = plotData(genderDataArray, 'rgba(120, 99, 132, 0.6)', 'rgba(120, 99, 132, 1)');
 
-				//////// Program Plot 
-				/*
-				var programData = {
-				  labels: programSizeLabelArray,
-				  datasets: [{
-					data: programSizeDataArray,
-					backgroundColor: [
-					  "rgba(248, 118, 109, 0.5)",
-					  "rgba(229, 135, 0, 0.5)",
-					  "rgba(201, 152, 0, 0.5)",
-					  "rgba(163, 165, 0, 0.5)",
-					  "rgba(107,177,0,0.5)",
-					  "rgba(0, 186, 56, 0.5)",
-					  "rgba(0, 191, 125, 0.5)",
-					  "rgba(0, 192, 175, 0.5)",
-					  "rgba(0, 188, 216, 0.5)",
-					  "rgba(0,176,246,0.5)",
-					  "rgba(97, 156, 255, 0.5)",
-					  "rgba(185, 131, 255, 0.5)",
-					  "rgba(97, 156, 255, 0.5)",
-					  "rgba(174,135,255,0.5)",
-					  "rgba(219, 114, 251, 0.5)",
-					  "rgba(245, 100, 227, 0.5)",
-					  "rgba(255,97,195,0.5)",
-					  "rgba(255, 105, 156, 0.5)"
-					]
-				  }]
-				};
-				*/
+				//Race Plot 
+				let raceData, chartOptionsRace = plotData(raceDataArray, 'rgba(240, 99, 132, 0.6)', 'rgba(240, 99, 132, 1)');
+				
+				//Department Plot 
+				let departmentData, chartOptionsDepartment = plotData(departmentDataArray, 'rgba(191, 191, 63, 0.8)', 'rgba(191, 191, 63, 0.8)', left_padding=50);
 
-				//////// Program Plot 
-				var programData = {
-				  label: 'Number of Students',
-				  data: programDataArray,
-				  backgroundColor:'rgba(0, 99, 132, 0.6)',
-				  borderColor: 'rgba(0, 99, 132, 1)',
-				  borderWidth: 2,
-				  hoverBorderWidth: 0
-				};
-
-
-				var chartOptionsProgram = {
-				   legend: {
-						display: false
-					},
-				  scales: {
-							xAxes: [{
-						        ticks: {
-								beginAtZero: true
-							}
-					}]	
-				  },
-				  elements: {
-					rectangle: {
-					  borderSkipped: 'left',
-					}
-				  }
-				};
-
-
-				//////// Degree Plot 
-				var degreeData = {
-				  label: 'Number of Students',
-				  data: degreeDataArray,
-				  backgroundColor:'rgba(33, 96, 1, 0.6)',
-				  borderColor: 'rgba(33, 96, 1, 1)',
-				  borderWidth: 2,
-				  hoverBorderWidth: 0
-				};
-
-				var chartOptionsDegree = {
-				   legend: {
-						display: false
-					},
-				  scales: {
-							xAxes: [{
-						        ticks: {
-								beginAtZero: true
-							}
-					}]	
-				  },
-				  elements: {
-					rectangle: {
-					  borderSkipped: 'left',
-					}
-				  }
-				};
-
-
-				//////// Gender Plot 
-
-				var genderData = {
-				  label: 'Number of Students',
-				  data: genderDataArray,
-				  backgroundColor: 'rgba(120, 99, 132, 0.6)',
-				  borderColor: 'rgba(120, 99, 132, 1)',
-				  borderWidth: 2,
-				  hoverBorderWidth: 0
-				};
-
-				var chartOptionsGender = {
-				   legend: {
-						display: false
-					},
-				  scales: {
-							xAxes: [{
-						        ticks: {
-								beginAtZero: true
-							}
-					}]	
-				  },
-				  elements: {
-					rectangle: {
-					  borderSkipped: 'left',
-					}
-				  }
-				};
-
-
-				//////// Race Plot 
-				var raceData = {
-				  label: 'Number of Students',
-				  data: raceDataArray,
-				  backgroundColor:'rgba(240, 99, 132, 0.6)',
-				  borderColor: 'rgba(240, 99, 132, 1)',
-				  borderWidth: 2,
-				  hoverBorderWidth: 0
-				};
-
-				var chartOptionsRace = {
-				   legend: {
-						display: false
-					},
-				  scales: {
-					xAxes: [{
-						        ticks: {
-								beginAtZero: true
-							}
-					}]					
-				  },
-				  elements: {
-					rectangle: {
-					  borderSkipped: 'left',
-					}
-				  }
-				};
-
-
-				//////// Department Plot 
-
-				var departmentData = {
-				  label: 'Number of Students',
-				  data: departmentDataArray,
-				  backgroundColor:'rgb(191, 191, 63, 0.8)',
-				  borderColor: 'rgb(191, 191, 63, 0.8)',
-				  borderWidth: 0,
-				  hoverBorderWidth: 0
-				};
-
-				var chartOptionsDepartment = {
-				   legend: {
-						display: false
-					},
-				  scales: {
-							xAxes: [{
-						        ticks: {
-								beginAtZero: true
-							}
-					}]	
-				  },
-					layout: {
-						padding: {
-						  left: 50
-						}
-					},
-				  elements: {
-					rectangle: {
-					  borderSkipped: 'left',
-					}
-				  }
-				};
-
-
-				// Learning Outcomes Bar Plots
-								
+				// Learning Outcomes Bar Plots			
 				var interestData = {
 				  label: 'Degree of Interest (0-5)',
 				  data:Q1_DataArray,
@@ -491,101 +333,7 @@ function getDataPlots(result, firstRun=TRUE){
 				  }
 				};
 
-
-
-
-				// Radar Data
-				/*
-				var interestData = {
-				  labels: Q1_DataLabels,
-				  datasets: [{
-					label: "Pre-program",
-					backgroundColor: "rgba(233,51,51,0.2)",
-					borderColor: "rgba(233,51,51, 1)",
-					data: Q1_DataArray
-				  },{
-					label: "Post-program",
-					backgroundColor: "rgba(120,120,255,0.2)",
-					borderColor: "rgba(120,120,255, 1)",
-					data: [4.1, 4.9, 4.1, 4.9, 4.4]
-				  }
-				  ]
-				};
-				
-
-				var priorityData = {
-				  labels: Q2_DataLabels,
-				  datasets: [{
-					label: "Pre-program",
-					backgroundColor: "rgba(233,51,51,0.2)",
-					borderColor: "rgba(233,51,51, 1)",
-					data: Q2_DataArray
-				  },{
-					label: "Post-program",
-					backgroundColor: "rgba(120,120,255,0.2)",
-					borderColor: "rgba(120,120,255, 1)",
-					data: [3.1, 3.9, 4.1, 2.9, 3.4]
-				  }
-				  ]
-				};
-
-				var supportData = {
-				  labels: Q3_DataLabels,
-				  datasets: [{
-					label: "Pre-program",
-					backgroundColor: "rgba(233,51,51,0.2)",
-					borderColor: "rgba(233,51,51, 1)",
-					data: Q3_DataArray
-				  },{
-					label: "Post-program",
-					backgroundColor: "rgba(120,120,255,0.2)",
-					borderColor: "rgba(120,120,255, 1)",
-					data: [4.1, 4.9, 4.1]
-				  }
-				  ]
-				};
-
-				
-
-				// Radar Plots
-				var radarOptions = {
-				  responsive: true,
-				  tooltips: false,
-				  // scale: https://www.chartjs.org/docs/latest/axes/radial/linear.html#axis-range-settings 
-				  scale: {
-					angleLines: {
-					  display: true
-					},
-					pointLabels:{
-					  // https://www.chartjs.org/docs/latest/axes/radial/linear.html#point-label-options 
-					  fontSize: 12,
-					  fontColor: 'black',
-					  callback: function(value, index, values) {
-						return value;
-					  }
-					},
-					ticks: {
-					  // https://www.chartjs.org/docs/latest/axes/styling.html#tick-configuration
-					  // suggestedMax and suggestedMin settings only change the data values that are used to scale the axis
-					  suggestedMin: 0,
-					  suggestedMax: 5,
-					  stepSize: 1, // 25 - 50 - 75 - 100 
-					  maxTicksLimit: 11, // Or use maximum number of ticks and gridlines to show 
-					  display: false, // remove label text only,
-					}
-				  },
-				  legend: {
-					// https://www.chartjs.org/docs/latest/configuration/legend.html
-					labels: {
-					  padding: 10,
-					  fontSize: 14,
-					  lineHeight: 30,
-					},
-				  },
-				};
-				*/
-
-				//////// Pipeline Plot 
+				//Pipeline Plot 
 				var pipelineData = {
 				  label: 'Number of Students',
 				  data: pipelineDataArray,
@@ -613,142 +361,21 @@ function getDataPlots(result, firstRun=TRUE){
 				  }
 				};
 
-
-
-				// Create the Chart Variables (that will be updated via AJAX)
-
-				/*
-				var programCanvas = document.getElementById("programChart").getContext("2d");
-				programChart = new Chart(programCanvas, {
-					type: 'polarArea',
-					data: programData
-				});
-				*/
-				
-				var programCanvas = document.getElementById("programChart").getContext("2d");
-				programChart = new Chart(programCanvas, {
-				  type: 'horizontalBar',
-				  data: {
-					labels: programLabelArray,
-					datasets: [programData],
-				  },
-				  options: chartOptionsProgram
-				});
-
-				var degreeCanvas = document.getElementById("degreeChart").getContext("2d");
-				degreeChart = new Chart(degreeCanvas, {
-				  type: 'horizontalBar',
-				  data: {
-					labels: degreeLabelArray,
-					datasets: [degreeData],
-				  },
-				  options: chartOptionsDegree
-				});
-
-				var genderCanvas = document.getElementById("genderChart").getContext("2d");
-				genderChart = new Chart(genderCanvas, {
-				  type: 'horizontalBar',
-				  data: {
-					labels: genderLabelArray,
-					datasets: [genderData],
-				  },
-				  options: chartOptionsGender
-				});
-
-				var raceCanvas = document.getElementById("raceChart").getContext("2d");
-				raceChart = new Chart(raceCanvas, {
-				  type: 'horizontalBar',
-				  data: {
-					labels: raceLabelArray,
-					datasets: [raceData],
-				  },
-				  options: chartOptionsRace
-				});
-
-
-				var departmentCanvas = document.getElementById("departmentChart").getContext("2d");
-				departmentChart = new Chart(departmentCanvas, {
-				  //type: 'bar',
-				  type: 'horizontalBar',
-				  data: {
-					labels: departmentLabelArray,
-					datasets: [departmentData],
-				  },
-				  options: chartOptionsDepartment
-				});
-
-
-				var interestCanvas = document.getElementById("interestChart").getContext("2d");
-				interestChart = new Chart(interestCanvas, {
-				  //type: 'bar',
-				  type: 'horizontalBar',
-				  data: {
-					labels: Q1_DataLabels,
-					datasets: [interestData],
-				  },
-				  options: chartOptionsLearnOutcomes
-				});
-				
-				var priorityCanvas = document.getElementById("prioritiesChart").getContext("2d");
-				priorityChart = new Chart(priorityCanvas, {
-				  //type: 'bar',
-				  type: 'horizontalBar',
-				  data: {
-					labels: Q2_DataLabels,
-					datasets: [priorityData],
-				  },
-				  options: chartOptionsLearnOutcomes
-				});
-				
-				var supportCanvas = document.getElementById("supportChart").getContext("2d");
-				supportChart = new Chart(supportCanvas, {
-				  //type: 'bar',
-				  type: 'horizontalBar',
-				  data: {
-					labels: Q3_DataLabels,
-					datasets: [supportData],
-				  },
-				  options: chartOptionsLearnOutcomes
-				});
-
-				/*
-				interestPlot = new Chart(document.getElementById("interestChart"), {
-				  type: 'radar',
-				  data: interestData,
-				  options: chartOptionsInterest
-				});
-				
-
-				priorityPlot = new Chart(document.getElementById("prioritiesChart"), {
-				  type: 'radar',
-				  data: priorityData,
-				  options: radarOptions
-				});
-
-				supportPlot = new Chart(document.getElementById("supportChart"), {
-				  type: 'radar',
-				  data: supportData,
-				  options: radarOptions
-				});
-
-				*/
-
-				var pipelineCanvas = document.getElementById("pipelineChart").getContext("2d");
-				pipelineChart = new Chart(pipelineCanvas, {
-				  type: 'horizontalBar',
-				  data: {
-					labels: pipelineLabelArray,
-					datasets: [pipelineData],
-				  },
-				  options: chartOptionsPipeline
-				});
+				programChart = getChart("programChart", programData, programLabelArray, chartOptionsProgram);
+				degreeChart = getChart("degreeChart", degreeData, degreeLabelArray, chartOptionsDegree);
+				genderChart = getChart("genderChart", genderData, genderLabelArray, chartOptionsGender);
+				raceChart = getChart("raceChart", raceData, raceLabelArray, chartOptionsRace);
+				departmentChart = getChart("departmentChart", departmentData, departmentLabelArray, chartOptionsDepartment);
+				interestChart = getChart("interestChart", interestData, Q1_DataLabels, chartOptionsLearnOutcomes);
+				priorityChart = getChart("prioritiesChart", priorityData, Q2_DataLabels, chartOptionsLearnOutcomes);
+				supportChart = getChart("supportChart", supportData, Q3_DataLabels, chartOptionsLearnOutcomes);
+				pipelineChart = getChart("pipelineChart", pipelineData, pipelineLabelArray, chartOptionsPipeline);
 		}
 
 function getCompletionDataPlots(result, firstRun=TRUE){
 		
 		var totalStudentsComplete = JSON.parse(result.allStudents);
 		totalStudentsComplete = parseInt(totalStudentsComplete[0]);
-		//console.log(totalStudentsSQL);
 		var expAnnualComplete = JSON.parse(result.allExpStudents);
 		console.log(expAnnualComplete);
 		var pcTargetComplete = parseInt((totalStudentsComplete/expAnnualComplete) * 100);
@@ -758,96 +385,47 @@ function getCompletionDataPlots(result, firstRun=TRUE){
 		document.getElementById("studentCompletion").innerHTML = totalStudentsComplete;
 		document.getElementById("studentCompletion").style.width = pcTargetComplete + "%";
 
-		//////////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////// Calculate Survey % (that are saying Yes)
-		//////////////////////////////////////////////////////////////////////////////////////////		
-		var Q1_Network_Length = JSON.parse(result.Q1_Network).length;
-		var Q1_Network_PC = Math.round((1 - ((JSON.parse(result.Q1_Network).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q1_Network_Length))*100);
-		
-		var Q1_Res_Length = JSON.parse(result.Q1_Res).length;
-		var Q1_Res_PC = Math.round((1 - ((JSON.parse(result.Q1_Res).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q1_Res_Length))*100);
-			
-		var Q1_SI_Length = JSON.parse(result.Q1_SI).length;
-		var Q1_SI_PC = Math.round((1 - ((JSON.parse(result.Q1_SI).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q1_SI_Length))*100);
-		
-		var Q1_Skill_Length = JSON.parse(result.Q1_Skill).length;
-		var Q1_Skill_PC = Math.round((1 - ((JSON.parse(result.Q1_Skill).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q1_Skill_Length))*100);
-		
-		var Q1_USC_Length = JSON.parse(result.Q1_USC).length;
-		var Q1_USC_PC = Math.round((1 - ((JSON.parse(result.Q1_USC).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q1_USC_Length))*100);
-		
-		var Q1_CompletionDataArray = [Q1_SI_PC,Q1_USC_PC,Q1_Skill_PC,Q1_Network_PC,Q1_Res_PC];
-		var Q1_CompletionLabelArray = [['Provided context on important','social issues'],
-									   ['Provided exposure to','under-served communities'],
-									   ['Developed specific skills that','are valuable to future work'],
-									   ['Provided exposure to a community','passionate about social impact'],
-									   ['Provided access to resources you','needed to design and implement','impactful solutions']];
-		
-		var Q2_Context_Length = JSON.parse(result.Q2_Context).length;
-		var Q2_Context_PC = Math.round((1 - ((JSON.parse(result.Q2_Context).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q2_Context_Length))*100);
-		
-		var Q2_Network_Length = JSON.parse(result.Q2_Network).length;
-		var Q2_Network_PC = Math.round((1 - ((JSON.parse(result.Q2_Network).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q2_Network_Length))*100);
-		
-		var Q2_Res_Length = JSON.parse(result.Q2_Res).length;
-		var Q2_Res_PC = Math.round((1 - ((JSON.parse(result.Q2_Res).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q2_Res_Length))*100);
-		
-		var Q2_Skill_Length = JSON.parse(result.Q2_Skill).length;
-		var Q2_Skill_PC = Math.round((1 - ((JSON.parse(result.Q2_Skill).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q2_Skill_Length))*100);
-		
-		var Q2_USC_Length = JSON.parse(result.Q2_USC).length;
-		var Q2_USC_PC = Math.round((1 - ((JSON.parse(result.Q2_USC).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q2_USC_Length))*100);
-		
-		var Q2_CompletionDataArray = [Q2_Context_PC,Q2_USC_PC,Q2_Skill_PC,Q2_Res_PC,Q2_Network_PC];
-		var Q2_CompletionLabelArray = [['Understanding the context behind','various social issues'],
-										['Gaining direct exposure to','under-served communities'],
-										['Building a concrete skill-set','within the social impact space'],
-										['Accessing resources to develop and','implement socially impactful solutions'],
-										['Networking with a community passionate','about social impact']];
-										
-		var Q3_Career_Length = JSON.parse(result.Q3_Career).length;
-		var Q3_Career_PC = Math.round((1 - ((JSON.parse(result.Q3_Career).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q3_Career_Length))*100);
-		
-		var Q3_Com_Length = JSON.parse(result.Q3_Com).length;
-		var Q3_Com_PC = Math.round((1 - ((JSON.parse(result.Q3_Com).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q3_Com_Length))*100);
-		
-		var Q3_Vol_Length = JSON.parse(result.Q3_Vol).length;
-		var Q3_Vol_PC = Math.round((1 - ((JSON.parse(result.Q3_Vol).filter(function (str) { return str.indexOf('Yes') === -1; }).length)/Q3_Vol_Length))*100);
-		
-		var Q3_CompletionDataArray = [Q3_Vol_PC,Q3_Com_PC,Q3_Career_PC];
-		var Q3_CompletionLabelArray = [['Volunteer or contribute time towards a','social cause you care about'],
-									   ['Make a difference in the community','where you currently live'],
-									   'Pursue a career in social impact'];		
-					
+		//Exit Survey Questions
+		let better_understanding_agree_array, better_understanding_agree_labels, gain_skills_social_change_agree_array,
+		 gain_skills_social_change_agree_labels, confidence_influencing_social_change_agree_array, 
+		 confidence_influencing_social_change_agree_labels, inspired_knowledge_forsocial_change_agree_array,
+		  inspired_knowledge_forsocial_change_agree_labels, incorporate_social_change_effort_academics_agree_array,
+		   incorporate_social_change_effort_academics_agree_labels,
+		   incorporate_social_change_effort_career_agree_array, incorporate_social_change_effort_career_agree_labels;  
+
+		better_understanding_agree_array, better_understanding_agree_labels = getQuestionArrays('better_understanding_agree', result);
+		gain_skills_social_change_agree_array, gain_skills_social_change_agree_labels = getQuestionArrays('gain_skills_social_change_agree', result);
+		confidence_influencing_social_change_agree_array, confidence_influencing_social_change_agree_labels = getQuestionArrays('confidence_influencing_social_change_agree', result);
+		inspired_knowledge_forsocial_change_agree_array, inspired_knowledge_forsocial_change_agree_labels = getQuestionArrays('inspired_knowledge_forsocial_change_agree', result);
+		incorporate_social_change_effort_academics_agree_array, incorporate_social_change_effort_academics_agree_labels = getQuestionArrays('incorporate_social_change_effort_academics_agree', result);
+		incorporate_social_change_effort_career_agree_array, incorporate_social_change_effort_career_agree_labels = getQuestionArrays('incorporate_social_change_effort_career_agree', result);
+
+		function detailedResponse(result, idName, jsonName){
+			var currentData = JSON.parse(result[jsonName]);
+			var optionalInnerHTML;
+			for (i = 0; i < currentData.length; i++) {
+				tempData = String(currentData[i]);
+				if(i==0){
+					optionalInnerHTML = '' + tempData;
+				} else {
+					optionalInnerHTML = optionalInnerHTML + '<br><br>' + tempData;
+				}
+			}
+			let thisDiv = document.getElementById(idName);
+			thisDiv.innerHTML = optionalInnerHTML;
+		}
+		//Effect on understanding of Social issues
+		detailedResponse(result, "effect_understanding_social_issues", "effect_understanding_social_issues");
+		//Effect on Confodence to Influence Social Change
+		detailedResponse(result, "effect_confidence_influencing_social_change", "effect_confidence_influencing_social_change");
+		//Motivation to Influence Social Change
+		detailedResponse(result, "effect_motivation_social_change", "effect_motivation_social_change");
+		//Associate name with feedback
+		detailedResponse(result, "associate_name_feedback", "associate_name_feedback");
 		// Learning Feedback
-		var learningData = JSON.parse(result.learningFeed);
-		var learningInnerHTML;
-		for (i = 0; i < learningData.length; i++) {
-			tempComment = String(learningData[i]);
-			if(i==0){
-				learningInnerHTML = '' + tempComment;
-			} else {
-				learningInnerHTML = learningInnerHTML + '<br><br>' + tempComment;
-			}
-		}
-		
-		var learningFeedDiv = document.getElementById('learningFeedDiv')
-		learningFeedDiv.innerHTML = learningInnerHTML;
-		
+		detailedResponse(result, 'learningFeedDiv', 'learningFeed');
 		// Optional Feedback
-		var optionalData = JSON.parse(result.optionalFeed);
-		var optionalInnerHTML;
-		for (i = 0; i < optionalData.length; i++) {
-			tempComment = String(optionalData[i]);
-			if(i==0){
-				optionalInnerHTML = '' + tempComment;
-			} else {
-				optionalInnerHTML = optionalInnerHTML + '<br><br>' + tempComment;
-			}
-		}
-		
-		var optionalFeedDiv = document.getElementById('optionalFeedDiv')
-		optionalFeedDiv.innerHTML = optionalInnerHTML;
+		detailedResponse(result, 'optionalFeedDiv', 'optionalFeed');
 		
 		// PKG Ambassador Feedback
 		var ambDataFN = JSON.parse(result.pkgAmbFN);
@@ -872,115 +450,40 @@ function getCompletionDataPlots(result, firstRun=TRUE){
 		
 		var pkgAmbDiv = document.getElementById('pkgAmbDiv')
 		pkgAmbDiv.innerHTML = ambInnerHTML;
-		
-		//////////////////////////////////////////////////////////////////////////////////////////
-		///////////////////////////////////////////// Plot Data
-		//////////////////////////////////////////////////////////////////////////////////////////
-		
+		// Plot Data
+				//Structure PlotData
+				//Program Plot 
+				let better_understanding_agree_data, better_understanding_agree_chart_option;
+				let inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_chart_option;
+				let gain_skills_agree_social_change_data, gain_skills_agree_social_change_chart_option;
+				let confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_chart_option;
+				let incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_chart_option;
+				[better_understanding_agree_data, better_understanding_agree_chart_option] = plotData(better_understanding_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				[inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_chart_option] = plotData(inspired_knowledge_forsocial_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				[gain_skills_agree_social_change_data, gain_skills_agree_social_change_chart_option] = plotData(gain_skills_social_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				[confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_chart_option] = plotData(confidence_influencing_social_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				[incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_chart_option] = plotData(incorporate_social_change_effort_academics_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
+				
 				if(!firstRun){
 					// Destroy Chart variables before recreating
-					Q1_CompletionChart.destroy();
-					Q2_CompletionChart.destroy();
-					Q3_CompletionChart.destroy();
+					better_understanding_agree.destroy();
+					gain_skills_social_change_agree.destroy();
+					confidence_influencing_social_change_agree.destroy();
+					inspired_knowledge_forsocial_change_agree.destroy();
+					incorporate_social_change_effort_academics_agree.destroy();
+					incorporate_social_change_effort_career_agree.destroy();
 				}
-				
-				
-				///// Structure PlotData
-
-				//////// Program Plot 
-				var Q1_CompletionData = {
-				  label: '% Students responding Yes',
-				  data: Q1_CompletionDataArray,
-				  backgroundColor:'rgba(0, 99, 132, 0.6)',
-				  borderColor: 'rgba(0, 99, 132, 1)',
-				  borderWidth: 2,
-				  hoverBorderWidth: 0
-				};
-				
-				var Q2_CompletionData = {
-				  label: '% Students responding Yes',
-				  data: Q2_CompletionDataArray,
-				  backgroundColor:'rgba(0, 99, 132, 0.6)',
-				  borderColor: 'rgba(0, 99, 132, 1)',
-				  borderWidth: 2,
-				  hoverBorderWidth: 0
-				};
-				
-				var Q3_CompletionData = {
-				  label: '% Students responding Yes',
-				  data: Q3_CompletionDataArray,
-				  backgroundColor:'rgba(0, 99, 132, 0.6)',
-				  borderColor: 'rgba(0, 99, 132, 1)',
-				  borderWidth: 2,
-				  hoverBorderWidth: 0
-				};
-
-
-				var chartOptionsCompletion = {
-				   legend: {
-						display: false
-					},
-				  scales: {
-							xAxes: [{
-						        ticks: {
-									        beginAtZero: true,
-											max: 100,
-											min: 0
-							}
-					}]	
-				  },
-				  layout: {
-						padding: {
-						  left: 0
-						}
-					},
-				  elements: {
-					rectangle: {
-					  borderSkipped: 'left',
-					}
-				  }
-				};
-
-
-
 				// Create the Chart Variables (that will be updated via AJAX)
-				
-				var Q1_CompletionCanvas = document.getElementById("Q1_CompletionChart").getContext("2d");
-				Q1_CompletionChart = new Chart(Q1_CompletionCanvas, {
-				  type: 'horizontalBar',
-				  data: {
-					labels: Q1_CompletionLabelArray,
-					datasets: [Q1_CompletionData],
-				  },
-				  options: chartOptionsCompletion
-				});
-
-				var Q2_CompletionCanvas = document.getElementById("Q2_CompletionChart").getContext("2d");
-				Q2_CompletionChart = new Chart(Q2_CompletionCanvas, {
-				  type: 'horizontalBar',
-				  data: {
-					labels: Q2_CompletionLabelArray,
-					datasets: [Q2_CompletionData],
-				  },
-				  options: chartOptionsCompletion
-				});
-				
-				
-				var Q3_CompletionCanvas = document.getElementById("Q3_CompletionChart").getContext("2d");
-				Q3_CompletionChart = new Chart(Q3_CompletionCanvas, {
-				  type: 'horizontalBar',
-				  data: {
-					labels: Q3_CompletionLabelArray,
-					datasets: [Q3_CompletionData],
-				  },
-				  options: chartOptionsCompletion
-				});
-
+				better_understanding_agree = getChart("better_understanding_agree", better_understanding_agree_data, better_understanding_agree_labels, better_understanding_agree_chart_option);
+				gain_skills_social_change_agree = getChart("gain_skills_social_change_agree", gain_skills_social_change_agree_data, gain_skills_social_change_agree_labels, gain_skills_agree_social_change_chart_option);
+				confidence_influencing_social_change_agree = getChart("confidence_influencing_social_change_agree", confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_labels, confidence_influencing_social_change_agree_chart_option);
+				inspired_knowledge_forsocial_change_agree = getChart("inspired_knowledge_forsocial_change_agree", inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_labels, inspired_knowledge_forsocial_change_agree_chart_option);
+				incorporate_social_change_effort_academics_agree = getChart("incorporate_social_change_effort_academics_agree", incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_labels, incorporate_social_change_effort_academics_agree_chart_option);
+				incorporate_social_change_effort_career_agree = getChart("incorporate_social_change_effort_career_agree", incorporate_social_change_effort_career_agree_data, incorporate_social_change_effort_career_agree_labels, incorporate_social_change_effort_career_agree_chart_option);
 		}
 		
 /// Get Value of Checked Boxes and Request Data
 function getFilter(getCSV=false){
-
 		// Year 
 		var arrayAY = [];
 		var checkboxesAY = document.querySelectorAll('input[type=checkbox]:checked.AY');
@@ -1028,14 +531,6 @@ function getFilter(getCSV=false){
 		for (var i = 0; i < checkboxesDep.length; i++) {
 		  arrayDep.push(checkboxesDep[i].value);
 		}
-
-		//console.log(arrayProg);
-		//console.log(arrayDep);
-		//console.log(arrayAY);
-		//console.log(arrayRace);
-		//console.log(arrayGender);
-		//console.log(arrayDeg);
-		
 		
 		dataPush = {
 						reqType:"filterData",
@@ -1046,10 +541,6 @@ function getFilter(getCSV=false){
 						ay:arrayAY,
 						dep:arrayDep
 					};
-		
-		//console.log(dataPush);
-		 
-		/// Get Registration Data
 		
         $.ajax({
                     type: "POST",
@@ -1070,11 +561,8 @@ function getFilter(getCSV=false){
 					 console.log(textStatus);
 					 console.log(jqXHR.responseText);
 				});
-    
-	
-	
+
 		/// Get Completion Data
-		
 		dataCompletionPush = {
 						reqType:"completionDataFilter",
 						prog:arrayProg,
@@ -1092,11 +580,8 @@ function getFilter(getCSV=false){
 					data:dataCompletionPush
                 })
                 .done(function (output) {
-					 //console.log(output);
                      var completionData = output;
-					 //console.log(completionData);
 					 getCompletionDataPlots(result=completionData,firstRun=false);
-					 //console.log(result);
 					 	 
                 }).fail(function (jqXHR, textStatus) {
 					 console.log(jqXHR);
@@ -1108,9 +593,7 @@ function getFilter(getCSV=false){
 
 				
 		if(getCSV==true){
-			
 				// Get Download Objects
-				
 				var password = document.getElementById("passwd").value;
 				document.getElementById("authMsg").innerHTML = 'Authenticating. Please Wait ...';
 		
@@ -1132,7 +615,6 @@ function getFilter(getCSV=false){
 					data:dataDownloadPush
                 })
                 .done(function (output) {
-					 //console.log(output);
                      var downloadData = output;
 					 document.getElementById("passwd").value = '';
 					 document.getElementById("authMsg").innerHTML = '';
@@ -1156,14 +638,8 @@ function getFilter(getCSV=false){
 						 for (i = 0; i < completionTableNames.length; i++) {
 							completionNamesVector[i]=completionTableNames[i][0];
 						 } 
-						 
-						 
 						 exportToCsv('registrationData.csv',registrationData,regNamesVector);
 						 exportToCsv('programCompletionData.csv',completionData,completionNamesVector);
-						
-						 //console.log(completionData);
-						 //getCompletionDataPlots(result=completionData,firstRun=false);
-						 //console.log(result);
 					 }
 					 
 					 	 
@@ -1175,11 +651,8 @@ function getFilter(getCSV=false){
 					 console.log(textStatus);
 					 console.log(jqXHR.responseText);
 				});
-		}		
-			
-		
+		}			
 }
-
 
 /// Get Unique Array Elements
 function arrayUnique(array) {
@@ -1202,11 +675,8 @@ function flattenArray(array){
 	return newArr;
 }
 
-
 /// Set Filters
 function getCheckBox(filterInput){
-	
-	
 	// Race 
 	var raceUL = document.getElementById('RaceUL');
 	var raceULList = '';
@@ -1274,12 +744,8 @@ function getCheckBox(filterInput){
 	}
 	degUL.innerHTML = degULList;
 
-	
 }
-
-
 	/// Set up the Page
-	
 	        $.ajax({
                     type: "POST",
                     url: "getResults.php",
@@ -1288,10 +754,8 @@ function getCheckBox(filterInput){
 					async:false
                 })
                 .done(function (output) {
-					 //console.log(output);
                      var inputFilters = output;
 					 // Update Filters
-					 //console.log(inputFilters);
 					 getCheckBox(filterInput=inputFilters);					 
 					 
                 }).fail(function (jqXHR, textStatus) {
@@ -1299,13 +763,6 @@ function getCheckBox(filterInput){
 					 console.log(textStatus);
 					 console.log(jqXHR.responseText);
 				});
-	
-	
-	
-	
-	/// Get General Data
-	//var testData;
-	
     $.ajax({
                     type: "POST",
                     url: "getResults.php",
@@ -1320,11 +777,8 @@ function getCheckBox(filterInput){
 					 //console.log(result);
 					 	 
                 });
-    		
-			
-	/// Get Completion Data
 
-	
+	/// Get Completion Data
     $.ajax({
                     type: "POST",
                     url: "getResults.php",
@@ -1340,9 +794,7 @@ function getCheckBox(filterInput){
 					 	 
                 });
 				
-		
 		/// Check List for Filter
-
 		var checkListAY = document.getElementById('listAY');
 		checkListAY.getElementsByClassName('anchor')[0].onclick = function(evt) {
 		  if (checkListAY.classList.contains('visible'))
@@ -1446,7 +898,6 @@ function getCheckBox(filterInput){
 			if($( "#listProg" ).hasClass( "visible" )){
 				$('.Prog:checkbox').prop("checked", false);
 			}
-			//$("input[type='checkbox']").prop("checked", false);
 		}
 
 		// Show Password Div 
@@ -1531,7 +982,6 @@ function getCheckBox(filterInput){
 					async:false
                 })
                 .done(function (output) {
-					// console.log(JSON.parse(output));
 					// Do Nothing
                 }).fail(function (jqXHR, textStatus) {
 					 console.log(jqXHR);

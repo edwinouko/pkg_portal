@@ -53,7 +53,7 @@ function getQuestionArrays(element_name, result){
 
 // Create the Chart Variables (that will be updated via AJAX)
 function getChart(id_name, data, labels, thisChartOption){
-	elementCanvas = document.getElementById(id_name).getContext("2d");
+	let elementCanvas = document.getElementById(id_name).getContext("2d");
 	return new Chart(elementCanvas, {
 		type: 'horizontalBar',
 		data: {

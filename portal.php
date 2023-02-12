@@ -292,9 +292,7 @@
 
 	      <div class="w3-container">
           <h5 class="w3-opacity"><b>Please describe the ways in which this program affected your understanding of relevant social issue(s)/challenge(s).</b></h5>
-		  <div class='chartHolder'>
-			<canvas id="effect_understanding_social_issues" width="850" height="550"></canvas>
-          </div>
+			<div id="effect_understanding_social_issues" class="textDiv overflowMinimal"></div>
 		  <hr>
 		  </div>
 
@@ -316,9 +314,7 @@
 
 		  <div class="w3-container">
           <h5 class="w3-opacity"><b>Please describe the ways in which this program affected your skills and confidence in your ability to influence social change. </b></h5>
-		  <div class='chartHolder'>
-			<canvas id="effect_confidence_influencing_social_change" width="850" height="550"></canvas>
-          </div>
+			<div id="effect_confidence_influencing_social_change" class="textDiv overflowMinimal"></div>
 		  <hr>
 		  </div>
 
@@ -348,25 +344,25 @@
 
 		  <div class="w3-container">
           <h5 class="w3-opacity"><b>Please describe the ways in which this program affected your motivations to participate in social change efforts, now at MIT and in the future.</b></h5>
-		  <div class='chartHolder'>
-			<canvas id="effect_motivation_social_change" width="850" height="550"></canvas>
+		  <div id="effect_motivation_social_change" class="textDiv overflowMinimal">
+		  </div>
+		  <hr>
+		  </div>
+
+		  <div class="w3-container">
+          <h5 class="w3-opacity"><b>Student Ambassador Sign-ups</b></h5>
+		  <div id="pkgAmbDiv" class="textDiv overflowMinimal">
           </div>
 		  <hr>
 		  </div>
 
 		  <div class="w3-container">
-          <h5 class="w3-opacity"><b>Please check this box if you are okay with us associating your name with any quotes or feedback from this form.</b></h5>
-		  <div class='chartHolder'>
-			<canvas id="associate_name_feedback" width="850" height="550"></canvas>
-          </div>
-		  <hr>
+		  <h5 class="w3-opacity"><b>Program Feedback</b></h5>
+		  <div id="learningFeedDiv" class="textDiv overflowMinimal">
 		  </div>
+		  </div>
+		  <hr>
 
-		  <div class="w3-container">
-			<h5 class="w3-opacity"><b>Program Feedback</b></h5>
-			<div id="learningFeedDiv" class="textDiv overflowMinimal"></div>
-		  </div>
-		  <hr>
 		  <div class="w3-container">
 			<h5 class="w3-opacity"><b>Optional Feedback</b></h5>
 			<div id="optionalFeedDiv" class="textDiv overflowMinimal">

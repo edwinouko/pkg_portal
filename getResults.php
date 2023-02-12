@@ -251,16 +251,12 @@ if ($reqType=="allData"){
 				$queryEnd = "AND Comments!=''";
 				$comments= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 				
-				
-				
 				// Get Metrics
-				
 				// Interest
 				$queryStart = "SELECT AVG(Q1_LearnSI) FROM Registration ";
 				$queryEnd = "";
 				$Q1_LearnSI= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 			
-				
 				$queryStart = "SELECT AVG(Q1_LearnVS) FROM Registration ";
 				$queryEnd = "";
 				$Q1_LearnVS= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
@@ -442,36 +438,35 @@ if ($reqType=="allData"){
 				$optionalFeed= queryDB($con, $query);
 							
 				// Get Survey Results
-				
-				$query = "SELECT better_understanding_agree FROM CompletionData";
-				$better_understanding_agree = queryDB($con, $query);
 
-				$query = "SELECT effect_understanding_social_issues FROM CompletionData";
-				$effect_understanding_social_issues= queryDB($con, $query);
+				function queryBuilder($con_, $column, $toCount=TRUE){
+					if($toCount){
+						$query = "SELECT $column , COUNT( $column ) as tot FROM CompletionData GROUP BY  $column  ORDER BY tot DESC";
+					} else {
+						$query = "SELECT  $column  FROM CompletionData";
+					}
+					return queryDB($con_, $query);
+				}
+				
+				$better_understanding_agree = queryBuilder($con, "better_understanding_agree");
+
+				$effect_understanding_social_issues= queryBuilder($con, "effect_understanding_social_issues", $toCount=FALSE);
 							
-				$query = "SELECT gain_skills_social_change_agree FROM CompletionData";
-				$gain_skills_social_change_agree= queryDB($con, $query);
+				$gain_skills_social_change_agree= queryBuilder($con, "gain_skills_social_change_agree");
 
-				$query = "SELECT confidence_influencing_social_change_agree FROM CompletionData";
-				$confidence_influencing_social_change_agree= queryDB($con, $query);
+				$confidence_influencing_social_change_agree= queryBuilder($con, "confidence_influencing_social_change_agree");
 
-				$query = "SELECT effect_confidence_influencing_social_change FROM CompletionData";
-				$effect_confidence_influencing_social_change = queryDB($con, $query);
+				$effect_confidence_influencing_social_change = queryBuilder($con, "effect_confidence_influencing_social_change", $toCount=FALSE);
 		
-				$query = "SELECT inspired_knowledge_forsocial_change_agree FROM CompletionData";
-				$inspired_knowledge_forsocial_change_agree = queryDB($con, $query);
+				$inspired_knowledge_forsocial_change_agree = queryBuilder($con, "inspired_knowledge_forsocial_change_agree");
 				
-				$query = "SELECT incorporate_social_change_effort_academics_agree FROM CompletionData";
-				$incorporate_social_change_effort_academics_agree= queryDB($con, $query);
+				$incorporate_social_change_effort_academics_agree= queryBuilder($con, "incorporate_social_change_effort_academics_agree");
 
-				$query = "SELECT incorporate_social_change_effort_career_agree FROM CompletionData";
-				$incorporate_social_change_effort_career_agree = queryDB($con, $query);
+				$incorporate_social_change_effort_career_agree = queryBuilder($con, "incorporate_social_change_effort_career_agree");
 
-				$query = "SELECT effect_motivation_social_change FROM CompletionData";
-				$effect_motivation_social_change = queryDB($con, $query);
+				$effect_motivation_social_change = queryBuilder($con, "effect_motivation_social_change", $toCount=FALSE);
 
-				$query = "SELECT associate_name_feedback FROM CompletionData";
-				$associate_name_feedback = queryDB($con, $query);
+				$associate_name_feedback = queryBuilder($con, "associate_name_feedback", $toCount=FALSE);
 		
 
 				echo json_encode(array( 

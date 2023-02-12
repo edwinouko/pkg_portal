@@ -367,6 +367,22 @@ function getDataPlots(result, firstRun=TRUE){
 				pipelineChart = getChart("pipelineChart", pipelineData, pipelineLabelArray, chartOptionsPipeline);
 		}
 
+function detailedResponse(result, jsonName){
+	let currentData = JSON.parse(result[jsonName]);
+	let resp;
+	for (i = 0; i < currentData.length; i++) {
+		const str = currentData[i].toString().trim();
+		if (str === null || str === "" || str === "undefined") continue;
+		if(i==0){
+			resp = '' + str;
+		} else {
+			resp = resp + '<br><br>' + str;
+		}
+	}
+	return resp;
+}
+
+
 function getCompletionDataPlots(result, firstRun=TRUE){
 		
 		var totalStudentsComplete = JSON.parse(result.allStudents);
@@ -387,62 +403,42 @@ function getCompletionDataPlots(result, firstRun=TRUE){
 		const [incorporate_social_change_effort_academics_agree_array, incorporate_social_change_effort_academics_agree_labels] = getQuestionArrays('incorporate_social_change_effort_academics_agree', result);
 		const [incorporate_social_change_effort_career_agree_array, incorporate_social_change_effort_career_agree_labels] = getQuestionArrays('incorporate_social_change_effort_career_agree', result);
 
-		function detailedResponse(result, jsonName){
-			let currentData = JSON.parse(result[jsonName]);
-			let resp;
-			for (i = 0; i < currentData.length; i++) {
-				if(i==0){
-					resp = '' + String(currentData[i]);
-				} else {
-					resp = resp + '<br><br>' + String(currentData[i]);
-				}
-			}
-			return resp;
-		}
 		//Effect on understanding of Social issues
 		document.getElementById("effect_understanding_social_issues").innerHTML = detailedResponse(result, "effect_understanding_social_issues");
 		//Effect on Confidence to Influence Social Change
 		document.getElementById("effect_confidence_influencing_social_change").innerHTML = detailedResponse(result, "effect_confidence_influencing_social_change");
 		//Motivation to Influence Social Change
 		document.getElementById("effect_motivation_social_change").innerHTML = detailedResponse(result, "effect_motivation_social_change");
-		//Associate name with feedback
-		document.getElementById("associate_name_feedback").innerHTML = detailedResponse(result, "associate_name_feedback");
 		// Learning Feedback
 		document.getElementById("learningFeedDiv").innerHTML = detailedResponse(result, "learningFeed");
 		// Optional Feedback
 		document.getElementById("optionalFeedDiv").innerHTML = detailedResponse(result, "optionalFeed");
 		
 		// PKG Ambassador Feedback
-		var ambDataFN = JSON.parse(result.pkgAmbFN);
-		var ambDataLN = JSON.parse(result.pkgAmbLN);
-		var ambDataEmail = JSON.parse(result.pkgAmbEmail);
-		var ambInnerHTML;
+		const ambDataFN = JSON.parse(result.pkgAmbFN);
+		const ambDataLN = JSON.parse(result.pkgAmbLN);
+		const ambDataEmail = JSON.parse(result.pkgAmbEmail);
+		let ambInnerHTML;
 		for (i = 0; i < ambDataEmail.length; i++) {
-			tempEmail = String(ambDataEmail[i]);
-			tempFN = String(ambDataFN[i]);
-			tempLN = String(ambDataLN[i]);
+			let tempFN = ambDataFN[i].toString();
+			let tempName;
 			if(tempFN=='No response'){
 				tempName='';
 			}else{
-				tempName='('+tempFN + ' ' + tempLN + ')';
+				tempName='('+ambDataFN[i].toString() + ' ' + ambDataLN[i].toString() + ')';
 			}
 			if(i==0){
-				ambInnerHTML = '' + tempEmail + ' ' + tempName;
+				ambInnerHTML = '' + ambDataEmail[i].toString() + ' ' + tempName;
 			} else {
-				ambInnerHTML = ambInnerHTML + '<br>' + tempEmail + ' ' + tempName;
+				ambInnerHTML = ambInnerHTML + '<br>' + ambDataEmail[i].toString() + ' ' + tempName;
 			}
 		}
+		document.getElementById('pkgAmbDiv').innerHTML = ambInnerHTML;
+
 		
-		var pkgAmbDiv = document.getElementById('pkgAmbDiv')
-		pkgAmbDiv.innerHTML = ambInnerHTML;
 		// Plot Data
 				//Structure PlotData
 				//Program Plot 
-				// let better_understanding_agree_data, better_understanding_agree_chart_option;
-				// let inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_chart_option;
-				// let gain_skills_agree_social_change_data, gain_skills_agree_social_change_chart_option;
-				// let confidence_influencing_social_change_agree_data, confidence_influencing_social_change_agree_chart_option;
-				// let incorporate_social_change_effort_academics_agree_data, incorporate_social_change_effort_academics_agree_chart_option;
 				const [better_understanding_agree_data, better_understanding_agree_chart_option] = plotData(better_understanding_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
 				const [inspired_knowledge_forsocial_change_agree_data, inspired_knowledge_forsocial_change_agree_chart_option] = plotData(inspired_knowledge_forsocial_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
 				const [gain_skills_social_change_agree_data, gain_skills_social_change_agree_chart_option] = plotData(gain_skills_social_change_agree_array, 'rgba(33, 96, 1, 0.6)', 'rgba(33, 96, 1, 1)');
@@ -534,12 +530,10 @@ function getFilter(getCSV=false){
 					data: dataPush
                 })
                 .done(function (output) {
-					 //console.log(output);
                      var inputData = output;
 					 
 					 // Update Chart
 					 getDataPlots(result=inputData,firstRun=false);
-					 //console.log(inputData);				 
 					 
                 }).fail(function (jqXHR, textStatus) {
 					 console.log(jqXHR);
@@ -573,9 +567,6 @@ function getFilter(getCSV=false){
 					 console.log(textStatus);
 					 console.log(jqXHR.responseText);
 				});
-				
-				
-
 				
 		if(getCSV==true){
 				// Get Download Objects
@@ -771,12 +762,9 @@ function getCheckBox(filterInput){
 					async:false
                 })
                 .done(function (output) {
-					 //console.log(output);
                      var completionData = $.parseJSON(output);
 					 //testData = completionData;
-					 getCompletionDataPlots(result=completionData,firstRun=true);
-					 //console.log(result);
-					 	 
+					 getCompletionDataPlots(result=completionData,firstRun=true);					 	 
                 });
 				
 		/// Check List for Filter

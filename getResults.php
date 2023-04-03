@@ -438,7 +438,7 @@ if ($reqType=="allData"){
 
 				function queryBuilder($con_, $column, $toCount=TRUE){
 					if($toCount){
-						$query = "SELECT ".$column." , COUNT( * ) as tot FROM CompletionData GROUP BY  ".$column."  ORDER BY tot DESC";
+						$query = "SELECT ".$column.", COUNT( * ) as tot FROM CompletionData GROUP BY  ".$column."  ORDER BY tot DESC";
 					} else {
 						$query = "SELECT ".$column." FROM CompletionData";
 					}
@@ -542,36 +542,36 @@ if ($reqType=="allData"){
 		$optionalFeed= queryDBFilter($con, $query, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 		
 		// Get Survey Results
-		function queryBuilder($con_, $column, $toCount=TRUE){
+		function queryBuilderFilter($con_, $column, $toCount=TRUE){
 			$queryEnd = "";
 			if($toCount){
 				$queryStart = "SELECT ".$column.", COUNT(*) as tot FROM CompletionData ";
-				$queryEnd = "GROUP BY  '".$column."'  ORDER BY tot DESC";
+				$queryEnd = "GROUP BY  ".$column."  ORDER BY tot DESC";
 			} else {
 				$queryStart = "SELECT ".$column." FROM CompletionData ";
 			}
 			return queryDBFilter($con_, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 		}
 		
-		$better_understanding_agree = queryBuilder($con, "better_understanding_agree");
+		$better_understanding_agree = queryBuilderFilter($con, "better_understanding_agree");
 
-		$effect_understanding_social_issues= queryBuilder($con, "effect_understanding_social_issues", $toCount=FALSE);
+		$effect_understanding_social_issues= queryBuilderFilter($con, "effect_understanding_social_issues", $toCount=FALSE);
 					
-		$gain_skills_social_change_agree= queryBuilder($con, "gain_skills_social_change_agree");
+		$gain_skills_social_change_agree= queryBuilderFilter($con, "gain_skills_social_change_agree");
 
-		$confidence_influencing_social_change_agree= queryBuilder($con, "confidence_influencing_social_change_agree");
+		$confidence_influencing_social_change_agree= queryBuilderFilter($con, "confidence_influencing_social_change_agree");
 
-		$effect_confidence_influencing_social_change = queryBuilder($con, "effect_confidence_influencing_social_change", $toCount=FALSE);
+		$effect_confidence_influencing_social_change = queryBuilderFilter($con, "effect_confidence_influencing_social_change", $toCount=FALSE);
 
-		$inspired_knowledge_forsocial_change_agree = queryBuilder($con, "inspired_knowledge_forsocial_change_agree");
+		$inspired_knowledge_forsocial_change_agree = queryBuilderFilter($con, "inspired_knowledge_forsocial_change_agree");
 		
-		$incorporate_social_change_effort_academics_agree= queryBuilder($con, "incorporate_social_change_effort_academics_agree");
+		$incorporate_social_change_effort_academics_agree= queryBuilderFilter($con, "incorporate_social_change_effort_academics_agree");
 
-		$incorporate_social_change_effort_career_agree = queryBuilder($con, "incorporate_social_change_effort_career_agree");
+		$incorporate_social_change_effort_career_agree = queryBuilderFilter($con, "incorporate_social_change_effort_career_agree");
 
-		$effect_motivation_social_change = queryBuilder($con, "effect_motivation_social_change", $toCount=FALSE);
+		$effect_motivation_social_change = queryBuilderFilter($con, "effect_motivation_social_change", $toCount=FALSE);
 
-		$associate_name_feedback = queryBuilder($con, "associate_name_feedback", $toCount=FALSE);
+		$associate_name_feedback = queryBuilderFilter($con, "associate_name_feedback", $toCount=FALSE);
 
 		echo json_encode(array( 
 		"reqType"=> $reqType,

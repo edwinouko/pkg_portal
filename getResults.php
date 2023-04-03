@@ -20,7 +20,6 @@ function queryDBFilter($connection,$queryS, $queryE, $programArray, $genderArray
 	return(json_encode($resultSet->fetch_all()));
 }
 
-
 $reqType = $_POST['reqType'];
 					
 if ($reqType=="allData"){
@@ -179,7 +178,6 @@ if ($reqType=="allData"){
 			$depArray = implode("','", $dep);
 
 			$con=mysqli_connect("sql.mit.edu","pkgdata","sox58kir","pkgdata+registrationData");
-			
 			
 			if (mysqli_connect_errno()){
 				echo json_encode("Failed to connect to MySQL: " . mysqli_connect_error());
@@ -404,7 +402,6 @@ if ($reqType=="allData"){
 					"pkgProgramList2"=> $pkgProgramList2));
 	}
 }else if ($reqType=="completionData"){
-			
 			$con=mysqli_connect("sql.mit.edu","pkgdata","sox58kir","pkgdata+registrationData");
 					
 			if (mysqli_connect_errno()){
@@ -441,9 +438,9 @@ if ($reqType=="allData"){
 
 				function queryBuilder($con_, $column, $toCount=TRUE){
 					if($toCount){
-						$query = "SELECT $column , COUNT( $column ) as tot FROM CompletionData GROUP BY  $column  ORDER BY tot DESC";
+						$query = "SELECT ".$column." , COUNT( * ) as tot FROM CompletionData GROUP BY  ".$column."  ORDER BY tot DESC";
 					} else {
-						$query = "SELECT  $column  FROM CompletionData";
+						$query = "SELECT ".$column." FROM CompletionData";
 					}
 					return queryDB($con_, $query);
 				}
@@ -467,7 +464,6 @@ if ($reqType=="allData"){
 				$effect_motivation_social_change = queryBuilder($con, "effect_motivation_social_change", $toCount=FALSE);
 
 				$associate_name_feedback = queryBuilder($con, "associate_name_feedback", $toCount=FALSE);
-		
 
 				echo json_encode(array( 
 				"reqType"=> $reqType,
@@ -493,145 +489,115 @@ if ($reqType=="allData"){
 			mysqli_close($con);
 	
 }else if ($reqType=="completionDataFilter"){
-			
-			$prog = $_POST['prog'];
-			$gender = $_POST['gender'];
-			$race = $_POST['race'];
-			$deg = $_POST['deg'];
-			$ay = $_POST['ay'];
-			$dep = $_POST['dep'];
-			$progArray = implode("','", $prog);
-			$genderArray = implode("','", $gender);
-			$raceArray = implode("','", $race);
-			$degArray = implode("','", $deg);
-			$ayArray = implode("','", $ay);
-			$depArray = implode("','", $dep);
-
-			$con=mysqli_connect("sql.mit.edu","pkgdata","sox58kir","pkgdata+registrationData");
-			
-			
-			if (mysqli_connect_errno()){
-				echo json_encode("Failed to connect to MySQL: " . mysqli_connect_error());
-			} else {
-							
-				// All Students 
-				$query = "SELECT COUNT(DISTINCT UID) FROM Registration";
-				$allExpStudents = queryDB($con, $query);
-							
-				// Get Filtered Data
-				$queryStart = "SELECT COUNT(DISTINCT TimeStamp) FROM CompletionData ";
-				$queryEnd = "";
-				$allStudents= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-				
-				// Get Learning Feedback
-				$queryStart = "SELECT LearningFeedback FROM CompletionData ";
-				$queryEnd = "AND LearningFeedback!=''";
-				$learningFeed= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-				
-				// Get PKG Ambassador 
-				$queryStart = "SELECT FirstName FROM CompletionData ";
-				$queryEnd = "AND PKG_Ambassador='Yes'";
-				$pkgAmbFN= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-						
-				$queryStart = "SELECT LastName FROM CompletionData ";
-				$queryEnd = "AND PKG_Ambassador='Yes'";
-				$pkgAmbLN= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-					
-				$queryStart = "SELECT Email FROM CompletionData ";
-				$queryEnd = "AND PKG_Ambassador='Yes'";
-				$pkgAmbEmail= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-					
-				// Get Optional Feedback
-				$queryStart = "SELECT OptionalFeedback FROM CompletionData ";
-				$queryEnd = "AND OptionalFeedback!=''";
-				$optionalFeed= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-													
-				// Get Survey Results
-				
-				// Contribute
-				$queryStart = "SELECT Q1Contribute_SI FROM CompletionData ";
-				$queryEnd = "";
-				$Q1_SI = queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
-								
-				$queryStart = "SELECT Q1Contribute_USC FROM CompletionData ";
-				$queryEnd = "";
-				$Q1_USC = queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-		
-				$queryStart = "SELECT Q1Contribute_Skill FROM CompletionData ";
-				$queryEnd = "";
-				$Q1_Skill = queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-			
-				$queryStart = "SELECT Q1Contribute_Network FROM CompletionData ";
-				$queryEnd = "";
-				$Q1_Network= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-			
-				$queryStart = "SELECT Q1Contribute_Res FROM CompletionData ";
-				$queryEnd = "";
-				$Q1_Res= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-									
-				// Interest
-				$queryStart = "SELECT Q2Interest_Context FROM CompletionData ";
-				$queryEnd = "";
-				$Q2_Context= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-									
-				$queryStart = "SELECT Q2Interest_USC FROM CompletionData ";
-				$queryEnd = "";
-				$Q2_USC= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-			
-				$queryStart = "SELECT Q2Interest_Skill FROM CompletionData ";
-				$queryEnd = "";
-				$Q2_Skill= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-			
-				$queryStart = "SELECT Q2Interest_Res FROM CompletionData ";
-				$queryEnd = "";
-				$Q2_Res= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-				
-				$queryStart = "SELECT Q2Interest_Network FROM CompletionData ";
-				$queryEnd = "";
-				$Q2_Network= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-									
-				// Equip 
-				$queryStart = "SELECT Q3Equip_Vol FROM CompletionData ";
-				$queryEnd = "";
-				$Q3_Vol= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-							
-				$queryStart = "SELECT Q3Equip_Community FROM CompletionData ";
-				$queryEnd = "";
-				$Q3_Com= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
-
-				$queryStart = "SELECT Q3Equip_Career FROM CompletionData ";
-				$queryEnd = "";
-				$Q3_Career= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);		
-
-				echo json_encode(array( 
-				"reqType"=> $reqType,
-				"learningFeed"=> $learningFeed,
-				"optionalFeed"=> $optionalFeed,
-				"pkgAmbFN"=> $pkgAmbFN,
-				"pkgAmbLN"=> $pkgAmbLN,
-				"pkgAmbEmail"=> $pkgAmbEmail,
-				"Q1_SI" => $Q1_SI,
-				"Q1_USC" => $Q1_USC,
-				"Q1_Skill" => $Q1_Skill,
-				"Q1_Network" => $Q1_Network,
-				"Q1_Res" => $Q1_Res,
-				"Q2_Context" => $Q2_Context,
-				"Q2_USC" => $Q2_USC,
-				"Q2_Skill" => $Q2_Skill,					
-				"Q2_Res" => $Q2_Res,
-				"Q2_Network" => $Q2_Network,
-				"Q3_Vol" => $Q3_Vol,
-				"Q3_Com" => $Q3_Com,
-				"Q3_Career" => $Q3_Career,
-				"allStudents" => $allStudents,
-				"allExpStudents" => $allExpStudents));	
-			}
-			
-			mysqli_close($con);
 	
+	$prog = $_POST['prog'];
+	$gender = $_POST['gender'];
+	$race = $_POST['race'];
+	$deg = $_POST['deg'];
+	$ay = $_POST['ay'];
+	$dep = $_POST['dep'];
+	$progArray = implode("','", $prog);
+	$genderArray = implode("','", $gender);
+	$raceArray = implode("','", $race);
+	$degArray = implode("','", $deg);
+	$ayArray = implode("','", $ay);
+	$depArray = implode("','", $dep);
+
+	$con=mysqli_connect("sql.mit.edu","pkgdata","sox58kir","pkgdata+registrationData");
+	
+	if (mysqli_connect_errno()){
+		echo json_encode("Failed to connect to MySQL: " . mysqli_connect_error());
+	} else {		
+		// All Students
+			
+			$query = "SELECT COUNT(DISTINCT UID) FROM Registration";
+			$allExpStudents = queryDB($con, $query);
+						
+			// Get Filtered Data
+			$queryStart = "SELECT COUNT(DISTINCT TimeStamp) FROM CompletionData ";
+			$queryEnd = "";
+			$allStudents= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
+			
+			// Get Learning Feedback
+			$queryStart = "SELECT LearningFeedback FROM CompletionData ";
+			$queryEnd = "AND LearningFeedback!=''";
+			$learningFeed= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
+			
+			// Get PKG Ambassador 
+			$queryStart = "SELECT FirstName FROM CompletionData ";
+			$queryEnd = "AND PKG_Ambassador='Yes'";
+			$pkgAmbFN= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
+					
+			$queryStart = "SELECT LastName FROM CompletionData ";
+			$queryEnd = "AND PKG_Ambassador='Yes'";
+			$pkgAmbLN= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
+				
+			$queryStart = "SELECT Email FROM CompletionData ";
+			$queryEnd = "AND PKG_Ambassador='Yes'";
+			$pkgAmbEmail= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
+		
+		// Get Optional Feedback
+		$queryStart = "SELECT OptionalFeedback FROM CompletionData WHERE OptionalFeedback!='' ";
+		$queryEnd = "";
+		$optionalFeed= queryDBFilter($con, $query, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
+		
+		// Get Survey Results
+		function queryBuilder($con_, $column, $toCount=TRUE){
+			$queryEnd = "";
+			if($toCount){
+				$queryStart = "SELECT ".$column.", COUNT(*) as tot FROM CompletionData ";
+				$queryEnd = "GROUP BY  '".$column."'  ORDER BY tot DESC";
+			} else {
+				$queryStart = "SELECT ".$column." FROM CompletionData ";
+			}
+			return queryDBFilter($con_, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
+		}
+		
+		$better_understanding_agree = queryBuilder($con, "better_understanding_agree");
+
+		$effect_understanding_social_issues= queryBuilder($con, "effect_understanding_social_issues", $toCount=FALSE);
+					
+		$gain_skills_social_change_agree= queryBuilder($con, "gain_skills_social_change_agree");
+
+		$confidence_influencing_social_change_agree= queryBuilder($con, "confidence_influencing_social_change_agree");
+
+		$effect_confidence_influencing_social_change = queryBuilder($con, "effect_confidence_influencing_social_change", $toCount=FALSE);
+
+		$inspired_knowledge_forsocial_change_agree = queryBuilder($con, "inspired_knowledge_forsocial_change_agree");
+		
+		$incorporate_social_change_effort_academics_agree= queryBuilder($con, "incorporate_social_change_effort_academics_agree");
+
+		$incorporate_social_change_effort_career_agree = queryBuilder($con, "incorporate_social_change_effort_career_agree");
+
+		$effect_motivation_social_change = queryBuilder($con, "effect_motivation_social_change", $toCount=FALSE);
+
+		$associate_name_feedback = queryBuilder($con, "associate_name_feedback", $toCount=FALSE);
+
+		echo json_encode(array( 
+		"reqType"=> $reqType,
+		"learningFeed"=> $learningFeed,
+		"optionalFeed"=> $optionalFeed,
+		"pkgAmbFN"=> $pkgAmbFN,
+		"pkgAmbLN"=> $pkgAmbLN,
+		"pkgAmbEmail"=> $pkgAmbEmail,
+		"better_understanding_agree" => $better_understanding_agree,
+		"effect_understanding_social_issues" => $effect_understanding_social_issues,
+		"gain_skills_social_change_agree" => $gain_skills_social_change_agree,
+		"confidence_influencing_social_change_agree" => $confidence_influencing_social_change_agree,
+		"effect_confidence_influencing_social_change" => $effect_confidence_influencing_social_change,
+		"inspired_knowledge_forsocial_change_agree" => $inspired_knowledge_forsocial_change_agree,
+		"incorporate_social_change_effort_academics_agree" => $incorporate_social_change_effort_academics_agree,
+		"incorporate_social_change_effort_career_agree" => $incorporate_social_change_effort_career_agree,					
+		"effect_motivation_social_change" => $effect_motivation_social_change,
+		"associate_name_feedback" => $associate_name_feedback,
+		"allStudents" => $allStudents,
+		"allExpStudents" => $allExpStudents));
+	
+	}
+	mysqli_close($con);	
 } else if ($reqType=="downloadData"){
 			$passwd = $_POST['passwd'];	
-			if($passwd=="timthebeaver"){
+			if($passwd == "timthebeaver"){
 				$prog = $_POST['prog'];
 				$gender = $_POST['gender'];
 				$race = $_POST['race'];

@@ -280,7 +280,6 @@
 	  </div>
 
 	  <div class="w3-container w3-card w3-white" style="margin-top:20px; page-break-before: always;" id="printPageBodyInner4">
-	  <!-- <div class="w3-container w3-card w3-white" id="printPageBodyInner2" style="page-break-before: always"> -->
         <h2 class="w3-text-grey w3-padding-16"><i class="fa fa-certificate fa-fw w3-margin-right w3-xxlarge w3-text-teal"></i>Post-Program Feedback</h2>
 		  <div class="w3-container">
           <h5 class="w3-opacity"><b>I have a better understanding of a social issue(s)/challenge(s) addressed by this program.</b></h5>

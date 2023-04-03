@@ -13,7 +13,7 @@ function queryDB($connection,$queryName) {
 					
 function queryDBFilter($connection,$queryS, $queryE, $programArray, $genderArray, $raceArray, $studtypeArray, $programyearArray, $departmentArray) {
 	$sql = $queryS."WHERE PKGProgram IN ('".$programArray."')"." AND Gender IN ('".$genderArray."')"." AND Race IN ('".$raceArray."')".
-	" AND StudentType IN ('".$studtypeArray."')"." AND ProgramYear IN ('".$programyearArray."')"." AND Department IN ('".$departmentArray."')".$queryE;
+	" AND StudentType IN ('".$studtypeArray."')"." AND ProgramYear IN ('".$programyearArray."')"." AND Department IN ('".$departmentArray."') ".$queryE;
 	$stmt = $connection->prepare($sql);
 	$stmt->execute();
 	$resultSet = $stmt->get_result();
@@ -434,13 +434,11 @@ if ($reqType=="allData"){
 				$query = "SELECT OptionalFeedback FROM CompletionData WHERE OptionalFeedback!=''";
 				$optionalFeed= queryDB($con, $query);
 							
-				// Get Survey Results
-
 				function queryBuilder($con_, $column, $toCount=TRUE){
 					if($toCount){
-						$query = "SELECT ".$column.", COUNT( * ) as tot FROM CompletionData GROUP BY  ".$column."  ORDER BY tot DESC";
+						$query = "SELECT ".$column.", COUNT(".$column.") as tot FROM CompletionData WHERE ".$column." IS NOT NULL GROUP BY  ".$column." ORDER BY tot DESC";
 					} else {
-						$query = "SELECT ".$column." FROM CompletionData";
+						$query = "SELECT ".$column." FROM CompletionData WHERE ".$column." IS NOT NULL";
 					}
 					return queryDB($con_, $query);
 				}
@@ -512,7 +510,7 @@ if ($reqType=="allData"){
 			
 			$query = "SELECT COUNT(DISTINCT UID) FROM Registration";
 			$allExpStudents = queryDB($con, $query);
-						
+			
 			// Get Filtered Data
 			$queryStart = "SELECT COUNT(DISTINCT TimeStamp) FROM CompletionData ";
 			$queryEnd = "";
@@ -520,7 +518,7 @@ if ($reqType=="allData"){
 			
 			// Get Learning Feedback
 			$queryStart = "SELECT LearningFeedback FROM CompletionData ";
-			$queryEnd = "AND LearningFeedback!=''";
+			$queryEnd = "AND LearningFeedback!='' AND LearningFeedback IS NOT NULL";
 			$learningFeed= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 			
 			// Get PKG Ambassador 
@@ -537,16 +535,16 @@ if ($reqType=="allData"){
 			$pkgAmbEmail= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);	
 		
 		// Get Optional Feedback
-		$queryStart = "SELECT OptionalFeedback FROM CompletionData WHERE OptionalFeedback!='' ";
-		$queryEnd = "";
-		$optionalFeed= queryDBFilter($con, $query, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
+		$queryStart = "SELECT OptionalFeedback FROM CompletionData ";
+		$queryEnd = "AND OptionalFeedback!='' ";
+		$optionalFeed= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 		
 		// Get Survey Results
 		function queryBuilderFilter($con_, $column, $toCount=TRUE){
-			$queryEnd = "";
+			$queryEnd = "AND ".$column." IS NOT NULL";
 			if($toCount){
-				$queryStart = "SELECT ".$column.", COUNT(*) as tot FROM CompletionData ";
-				$queryEnd = "GROUP BY  ".$column."  ORDER BY tot DESC";
+				$queryStart = "SELECT ".$column.", COUNT(".$column.") as tot FROM CompletionData ";
+				$queryEnd = "AND ".$column." IS NOT NULL GROUP BY  ".$column." ORDER BY tot DESC";
 			} else {
 				$queryStart = "SELECT ".$column." FROM CompletionData ";
 			}

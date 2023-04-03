@@ -516,7 +516,7 @@ function getFilter(getCSV=false){
 				console.log(jqXHR.responseText);
 			});
 
-	/// Get Completion Data
+	// Get Completion Data
 	dataCompletionPush = {
 						reqType:"completionDataFilter",
 						prog:arrayProg,
@@ -544,62 +544,62 @@ function getFilter(getCSV=false){
 			});
 				
 	if(getCSV){
-			// Download Objects
-			var password = document.getElementById("passwd").value;
-			document.getElementById("authMsg").innerHTML = 'Authenticating. Please Wait ...';
-	
-			dataDownloadPush = {
-								reqType:"downloadData",
-								prog:arrayProg,
-								race:arrayRace,
-								gender:arrayGender,
-								deg:arrayDeg,
-								ay:arrayAY,
-								dep:arrayDep,
-								passwd:password
-						}
-	$.ajax({
-		type: "POST",
-		url: "getResults.php",
-		dataType:"json",
-		data:dataDownloadPush
-	})
-	.done(function (output) {
-		var downloadData = output;
-		document.getElementById("passwd").value = '';
-		document.getElementById("authMsg").innerHTML = '';
-		// Check for Auth
-		if(output.auth=='Failure'){
-			alert('Invalid Password');
-		}else{
-			hidePassDiv();
-			var registrationData = JSON.parse(downloadData.registrationData);
-			var completionData = JSON.parse(downloadData.completionData);
-			var regTableNames = JSON.parse(downloadData.regTableNames);
-			var completionTableNames = JSON.parse(downloadData.completionTableNames);
-			
-			// Get Registration Table Names
-			var regNamesVector = [];
-			for (i = 0; i < regTableNames.length; i++) {
-			regNamesVector[i]=regTableNames[i][0];
-			}
-			
-			var completionNamesVector = [];
-			for (i = 0; i < completionTableNames.length; i++) {
-			completionNamesVector[i]=completionTableNames[i][0];
-			} 
-			exportToCsv('registrationData.csv',registrationData,regNamesVector);
-			exportToCsv('programCompletionData.csv',completionData,completionNamesVector);
-		}	 	 
-		}).fail(function (jqXHR, textStatus) {
-				alert('Invalid Password or Connection');
-				document.getElementById("passwd").value = '';
-				document.getElementById("authMsg").innerHTML = '';
-				console.log(jqXHR);
-				console.log(textStatus);
-				console.log(jqXHR.responseText);
-		});
-	}			
+		// Download Objects
+		var password = document.getElementById("passwd").value;
+		document.getElementById("authMsg").innerHTML = 'Authenticating. Please Wait ...';
+
+		dataDownloadPush = {
+							reqType:"downloadData",
+							prog:arrayProg,
+							race:arrayRace,
+							gender:arrayGender,
+							deg:arrayDeg,
+							ay:arrayAY,
+							dep:arrayDep,
+							passwd:password
+					}
+		$.ajax({
+			type: "POST",
+			url: "getResults.php",
+			dataType:"json",
+			data:dataDownloadPush
+		})
+		.done(function (output) {
+			var downloadData = output;
+			document.getElementById("passwd").value = '';
+			document.getElementById("authMsg").innerHTML = '';
+			// Check for Auth
+			if(output.auth=='Failure'){
+				alert('Invalid Password');
+			}else{
+				hidePassDiv();
+				var registrationData = JSON.parse(downloadData.registrationData);
+				var completionData = JSON.parse(downloadData.completionData);
+				var regTableNames = JSON.parse(downloadData.regTableNames);
+				var completionTableNames = JSON.parse(downloadData.completionTableNames);
+				
+				// Get Registration Table Names
+				var regNamesVector = [];
+				for (i = 0; i < regTableNames.length; i++) {
+				regNamesVector[i]=regTableNames[i][0];
+				}
+				
+				var completionNamesVector = [];
+				for (i = 0; i < completionTableNames.length; i++) {
+				completionNamesVector[i]=completionTableNames[i][0];
+				} 
+				exportToCsv('registrationData.csv',registrationData,regNamesVector);
+				exportToCsv('programCompletionData.csv',completionData,completionNamesVector);
+				}	 	 
+				}).fail(function (jqXHR, textStatus) {
+						alert('Invalid Password or Connection');
+						document.getElementById("passwd").value = '';
+						document.getElementById("authMsg").innerHTML = '';
+					console.log(jqXHR);
+					console.log(textStatus);
+					console.log(jqXHR.responseText);
+			});
+		}			
 }
 
 /// Get Unique Array Elements

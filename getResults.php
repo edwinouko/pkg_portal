@@ -5,18 +5,20 @@ error_reporting(E_ALL);
 
 // Get DataBase Values for Chart
 function queryDB($connection,$queryName) {
-	$stmt = $connection->prepare($queryName);
-	$stmt->execute();
-	$resultSet = $stmt->get_result();
+	$resultSet = $connection->query($queryName);
+	// $stmt = $connection->prepare($queryName);
+	// $stmt->execute();
+	// $resultSet = $stmt->get_result();
 	return(json_encode($resultSet->fetch_all()));
 }
 					
 function queryDBFilter($connection,$queryS, $queryE, $programArray, $genderArray, $raceArray, $studtypeArray, $programyearArray, $departmentArray) {
 	$sql = $queryS."WHERE PKGProgram IN ('".$programArray."')"." AND Gender IN ('".$genderArray."')"." AND Race IN ('".$raceArray."')".
 	" AND StudentType IN ('".$studtypeArray."')"." AND ProgramYear IN ('".$programyearArray."')"." AND Department IN ('".$departmentArray."') ".$queryE;
-	$stmt = $connection->prepare($sql);
-	$stmt->execute();
-	$resultSet = $stmt->get_result();
+	$resultSet = $connection->query($sql);
+	// $stmt = $connection->prepare($sql);
+	// $stmt->execute();
+	// $resultSet = $stmt->get_result();
 	return(json_encode($resultSet->fetch_all()));
 }
 
@@ -210,7 +212,7 @@ if ($reqType=="allData"){
 
 				$queryStart = "SELECT COUNT(DISTINCT Department) FROM Registration ";
 				$queryEnd = "";
-				$departmentNum= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
+				$departmentNum = queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 				
 				// Get Filter Data
 				
@@ -334,14 +336,10 @@ if ($reqType=="allData"){
 								"Q3_EquipVol" => $Q3_EquipVol,
 								"Q3_EquipCom" => $Q3_EquipCom,
 								"Q3_EquipCareer" => $Q3_EquipCareer));
-				
-				
 			}
-			
 			mysqli_close($con);
 			
 } else if($reqType=="getFilters"){
-	
 	$con=mysqli_connect("sql.mit.edu","pkgdata","sox58kir","pkgdata+registrationData");
 
 	// Check connection
@@ -540,7 +538,7 @@ if ($reqType=="allData"){
 		$optionalFeed= queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 		
 		// Get Survey Results
-		function queryBuilderFilter($con_, $column, $toCount=TRUE){
+		function queryBuilderFilter($con_, $column, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray, $toCount=TRUE){
 			$queryEnd = "AND ".$column." IS NOT NULL";
 			if($toCount){
 				$queryStart = "SELECT ".$column.", COUNT(".$column.") as tot FROM CompletionData ";
@@ -551,25 +549,25 @@ if ($reqType=="allData"){
 			return queryDBFilter($con_, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 		}
 		
-		$better_understanding_agree = queryBuilderFilter($con, "better_understanding_agree");
+		$better_understanding_agree = queryBuilderFilter($con, "better_understanding_agree", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 
-		$effect_understanding_social_issues= queryBuilderFilter($con, "effect_understanding_social_issues", $toCount=FALSE);
+		$effect_understanding_social_issues= queryBuilderFilter($con, "effect_understanding_social_issues", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray, $toCount=FALSE);
 					
-		$gain_skills_social_change_agree= queryBuilderFilter($con, "gain_skills_social_change_agree");
+		$gain_skills_social_change_agree= queryBuilderFilter($con, "gain_skills_social_change_agree", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 
-		$confidence_influencing_social_change_agree= queryBuilderFilter($con, "confidence_influencing_social_change_agree");
+		$confidence_influencing_social_change_agree= queryBuilderFilter($con, "confidence_influencing_social_change_agree", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 
-		$effect_confidence_influencing_social_change = queryBuilderFilter($con, "effect_confidence_influencing_social_change", $toCount=FALSE);
+		$effect_confidence_influencing_social_change = queryBuilderFilter($con, "effect_confidence_influencing_social_change", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray, $toCount=FALSE);
 
-		$inspired_knowledge_forsocial_change_agree = queryBuilderFilter($con, "inspired_knowledge_forsocial_change_agree");
+		$inspired_knowledge_forsocial_change_agree = queryBuilderFilter($con, "inspired_knowledge_forsocial_change_agree", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 		
-		$incorporate_social_change_effort_academics_agree= queryBuilderFilter($con, "incorporate_social_change_effort_academics_agree");
+		$incorporate_social_change_effort_academics_agree= queryBuilderFilter($con, "incorporate_social_change_effort_academics_agree", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 
-		$incorporate_social_change_effort_career_agree = queryBuilderFilter($con, "incorporate_social_change_effort_career_agree");
+		$incorporate_social_change_effort_career_agree = queryBuilderFilter($con, "incorporate_social_change_effort_career_agree", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 
-		$effect_motivation_social_change = queryBuilderFilter($con, "effect_motivation_social_change", $toCount=FALSE);
+		$effect_motivation_social_change = queryBuilderFilter($con, "effect_motivation_social_change", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray, $toCount=FALSE);
 
-		$associate_name_feedback = queryBuilderFilter($con, "associate_name_feedback", $toCount=FALSE);
+		$associate_name_feedback = queryBuilderFilter($con, "associate_name_feedback", $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray, $toCount=FALSE);
 
 		echo json_encode(array( 
 		"reqType"=> $reqType,

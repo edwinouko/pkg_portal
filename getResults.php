@@ -6,9 +6,6 @@ error_reporting(E_ALL);
 // Get DataBase Values for Chart
 function queryDB($connection,$queryName) {
 	$resultSet = $connection->query($queryName);
-	// $stmt = $connection->prepare($queryName);
-	// $stmt->execute();
-	// $resultSet = $stmt->get_result();
 	return(json_encode($resultSet->fetch_all()));
 }
 					
@@ -16,9 +13,7 @@ function queryDBFilter($connection,$queryS, $queryE, $programArray, $genderArray
 	$sql = $queryS."WHERE PKGProgram IN ('".$programArray."')"." AND Gender IN ('".$genderArray."')"." AND Race IN ('".$raceArray."')".
 	" AND StudentType IN ('".$studtypeArray."')"." AND ProgramYear IN ('".$programyearArray."')"." AND Department IN ('".$departmentArray."') ".$queryE;
 	$resultSet = $connection->query($sql);
-	// $stmt = $connection->prepare($sql);
-	// $stmt->execute();
-	// $resultSet = $stmt->get_result();
+	
 	return(json_encode($resultSet->fetch_all()));
 }
 
@@ -215,7 +210,6 @@ if ($reqType=="allData"){
 				$departmentNum = queryDBFilter($con, $queryStart, $queryEnd, $progArray, $genderArray, $raceArray, $degArray, $ayArray, $depArray);
 				
 				// Get Filter Data
-				
 				// Get Plot Data - Program
 				$queryStart = "SELECT PKGProgram, COUNT(PKGProgram) AS tot FROM Registration ";
 				$queryEnd = "GROUP BY PKGProgram ORDER BY tot DESC";
@@ -434,7 +428,16 @@ if ($reqType=="allData"){
 							
 				function queryBuilder($con_, $column, $toCount=TRUE){
 					if($toCount){
-						$query = "SELECT ".$column.", COUNT(".$column.") as tot FROM CompletionData WHERE ".$column." IS NOT NULL GROUP BY  ".$column." ORDER BY tot DESC";
+						$orderFilter = "(
+							case ".$column."
+							when 'Strongly Disagree' then 0 
+							when 'Disagree' then 1
+							when 'Agree' then 2
+							when 'Strongly Agree' then 3
+							when 'Not Applicable' then 4
+							end
+					   ) ";
+						$query = "SELECT ".$column.", COUNT(".$column.") as tot FROM CompletionData WHERE ".$column." IS NOT NULL GROUP BY  ".$column." ORDER BY ".$orderFilter."";
 					} else {
 						$query = "SELECT ".$column." FROM CompletionData WHERE ".$column." IS NOT NULL";
 					}
@@ -542,7 +545,16 @@ if ($reqType=="allData"){
 			$queryEnd = "AND ".$column." IS NOT NULL";
 			if($toCount){
 				$queryStart = "SELECT ".$column.", COUNT(".$column.") as tot FROM CompletionData ";
-				$queryEnd = "AND ".$column." IS NOT NULL GROUP BY  ".$column." ORDER BY tot DESC";
+				$orderFilter = "(
+					case ".$column."
+					when 'Strongly Disagree' then 0 
+					when 'Disagree' then 1
+					when 'Agree' then 2
+					when 'Strongly Agree' then 3
+					when 'Not Applicable' then 4
+					end
+			   ) ";
+				$queryEnd = "AND ".$column." IS NOT NULL GROUP BY  ".$column." ORDER BY ".$orderFilter."";
 			} else {
 				$queryStart = "SELECT ".$column." FROM CompletionData ";
 			}
